@@ -9,8 +9,8 @@ Catalog_231 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 231);
 [date_222, temp] = stim_date_func(Catalog_222);
 [date_231, temp] = stim_date_func(Catalog_231);
 plot_timestamp_stim(231, Catalog_231)
+plot_timestamp_stim(222, Catalog_222)
 
-
-T_222_arr = table2array(T_222);
-T_231_arr = table2array(T_231);
-save('/Users/hp/GitHub/EEG/data/features', 'T_222_arr', 'T_231_arr', '-v7.3');
+%T_222_arr = table2array(T_222);
+%T_231_arr = table2array(T_231);
+%save('/Users/hp/GitHub/EEG/data/features', 'T_222_arr', 'T_231_arr', '-v7.3');

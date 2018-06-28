@@ -3,7 +3,7 @@
 function [stimulated, scheduled] = stim_date_func(data_raw)
 data = data_raw(:,[6, 7, end] );
 
-prepath = '../datdata/';
+prepath = '/Users/hp/GitHub/EEG/datdata/';
 b = zeros(height(data), 1);
 for i = 1:height(data)
     

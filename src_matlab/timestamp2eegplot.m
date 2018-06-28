@@ -3,7 +3,7 @@
 function timestamp2eegplot(data, timestamp)
 T = data.Timestamp_int;
 F = data.Filename;
-prepath = '../datdata/';
+prepath = '/Users/hp/GitHub/EEG/datdata/';
     
 for i = 1:length(T)
 	% find the row with the timestamp

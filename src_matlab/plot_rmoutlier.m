@@ -1,4 +1,4 @@
-function plot_timestamp_stim(pt_ID, data)
+function plot_rmoutlier(pt_ID, data)
 % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
 

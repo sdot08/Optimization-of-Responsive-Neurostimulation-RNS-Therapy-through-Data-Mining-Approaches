@@ -6,7 +6,7 @@
 
 SOS_10_100 = [1,0,-1,1,1.33005388381822,0.651526241334396;1,0,-1,1,-1.77694660164778,0.835830280197904;1,0,-1,1,-1.55074915261902,0.609131909820269;1,0,-1,1,0.998310234198153,0.276325818973493];
 G_10_100 = [0.795158533814479;0.795158533814479;0.691562244434348;0.691562244434348;1];
-path = '../datdata/131124920161910000.dat';
+path = '/Users/hp/GitHub/EEG/datdata/131124920161910000.dat';
 data  = readPersystDat(path);
 %code for finding spikes. For computing spike rate divide by length of
 %data. 
@@ -34,10 +34,10 @@ for ch = 1:Nchan
     data_each_channel_donoho = filtfilt(SOS_10_100, G_10_100, data_each_channel);  %applying band pass filter to data
     IIS_threshold = 7.5*((median(abs(data_each_channel_donoho)))/0.6745);          %See Donoho and Johnstone, 1994
     [pks,locp] = findpeaks(abs(data_each_channel_donoho), 'MINPEAKHEIGHT', IIS_threshold, 'MINPEAKDISTANCE',30);
-    disp('ch=')
-    disp(ch)
-    disp(pks)
-    disp(locp)
+    %disp('ch=')
+    %disp(ch)
+    %disp(pks)
+    %disp(locp)
     figure(f_stim);
     dat = data_each_channel_donoho;
     addval = (ch-1)*(dg_max+100);
