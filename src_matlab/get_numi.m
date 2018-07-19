@@ -1,9 +1,10 @@
 %output a table with each filename corresponds to the power of each band in 
 % each channel(28 features)
+warning('off','all')
 data = Catalog_222;
 files = data.Filename;
 %initiate channelPowers
-channelPowers = zeros(height(data),28, 'double');
+numi = zeros(height(data),2, 'double');
 for i = 1:length(files)
     filename = files(i);
     prepath = '/Users/hp/GitHub/EEG/datdata/';
@@ -11,12 +12,12 @@ for i = 1:length(files)
     %check if the file exists
     if exist(path, 'file') == 2
         %get channel power for that particular file
-        data_power  = readPersystDat(path);
-        channelPower = get_power_load(data_power);
-        channelPowers(i,:) = channelPower;
+        data_eeg = stitch(path, 0, 222);
+        [numi(i,1), numi(i,2)] = interictalplot(data_eeg, 0);
     else
         disp('not found')
     end
 end
-T_222 = table(data.Filename, data.Timestamp_int, channelPowers);
+numi_T_222 = table(data.Filename, data.Timestamp_int, numi);
 
+%save('/Users/hp/GitHub/EEG/data/numi', 'numi_T_231', 'numi_T_222', '-v7.3');

@@ -1,18 +1,17 @@
 %% Calculate power in specific frequency bands
 %% input path of the file
 %% output the 28 power features corrsponds to the file
-function channel_power = get_power_load(path)
-data  = readPersystDat(path);
+function channel_power = get_power_load(data)
 
 
 %define ECoG power bands of interest
-Power_band{1} = [0 4];        %delta
+Power_band{1} = [0.5 4];        %delta
 Power_band{2} = [4 8];       %theta
 Power_band{3} = [8 12];      %alpha
 Power_band{4} = [12 25];     %beta
 Power_band{5} = [25 50];     %low gamma
 Power_band{6} = [50 124.9];  %high gamma
-Power_band{7} = [0 124.9];   %entire band
+Power_band{7} = [0.1 124.9];   %entire band
 
 data_each_channel_delta = zeros(4,1, 'double');
 data_each_channel_theta = zeros(4,1, 'double');
@@ -26,6 +25,9 @@ channel_power = zeros(28,1, 'double');
 
 for i = 1:4
     data_each_channel = data(:,i);
+    
+    data_each_channel = data_each_channel - mean(data_each_channel);
+    
     %code for finding spectral power in the different frequency bands.
     data_each_channel_delta(i)  = bandpower(data_each_channel, 250, Power_band{1});
     data_each_channel_theta(i)  = bandpower(data_each_channel, 250, Power_band{2});

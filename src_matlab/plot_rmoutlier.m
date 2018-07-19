@@ -1,4 +1,4 @@
-function plot_rmoutlier(pt_ID, data)
+function plot_rmoutlier(pt_ID, sch, sti)
 % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
 
@@ -13,23 +13,22 @@ switch pt_ID
         sched_names = {'04:00', '10:00', '16:00', '22:00'};
 end
 
-[stimulated, scheduled] = stim_date_func(data);
-stimulated_date = floor(stimulated);
-stimulated_4d = stimulated - stimulated_date;
-scheduled_date = floor(scheduled);
-scheduled_4d = scheduled - scheduled_date;
+sti_date = floor(sti);
+sti_4d = sti - sti_date;
+sch_date = floor(sch);
+sch_4d = sch - sch_date;
 %length_4d = length(Catalog_Time_4d);
 %x = linspace(1,length_4d, length_4d);
 f_h = figure('OuterPosition', [50 50 800 600]);
 
-scatter(stimulated_4d, stimulated_date, 'r')
+scatter(sti_4d, sti_date, 'r')
 hold on
-scatter(scheduled_4d, scheduled_date, 'b')
+scatter(sch_4d, sch_date, 'b')
 
 set(gca, 'XTick', sched, 'XTickLabel', sched_names);
 xlabel('Time during day');
 ylabel('Date (MM/DD/YY)');
 title(['Patient ID: ' num2str(pt_ID)])
 hold off
-fig_name = ['/Users/hp/GitHub/EEG/fig/' num2str(pt_ID) '_DAT_time_date.png'];
-export_fig(fig_name, '-a1', '-nocrop');
+%fig_name = ['/Users/hp/GitHub/EEG/fig/' num2str(pt_ID) '_DAT_time_date.png'];
+%export_fig(fig_name, '-a1', '-nocrop');

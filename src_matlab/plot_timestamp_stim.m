@@ -31,5 +31,5 @@ xlabel('Time during day');
 ylabel('Date (MM/DD/YY)');
 title(['Patient ID: ' num2str(pt_ID)])
 hold off
-fig_name = ['/Users/hp/GitHub/EEG/fig/' num2str(pt_ID) '_DAT_time_date.png'];
+fig_name = ['/Users/hp/GitHub/EEG/fig/prev_' num2str(pt_ID) '_DAT_time_date.png'];
 export_fig(fig_name, '-a1', '-nocrop');

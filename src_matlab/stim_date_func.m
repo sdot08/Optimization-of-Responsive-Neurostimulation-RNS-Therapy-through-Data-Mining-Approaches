@@ -17,10 +17,10 @@ for i = 1:height(data)
     filename = datai.Filename;
     path = strcat(prepath, filename);
     z = stim_detection_z(path, 0, '');
-    if z == true
-        b(i) = 1;
-        continue
-    end
+    %if z == true
+   %     b(i) = 1;
+    %    continue
+  %  end
     %determine if the file correponds to path is stimulated instances or not
     b(i) = stim_detection_c(path, 0, '');
    
