@@ -4,17 +4,11 @@ import_data;
 % integer for patient 222 and patient 231
 Catalog_222 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 222);
 Catalog_231 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 231);
-%summary_data(Catalog);
-%get the date in which EEG curve contains stimulation
-[date_222, temp] = stim_date_func(Catalog_222);
-[date_231, temp] = stim_date_func(Catalog_231);
-plot_timestamp_stim(231, Catalog_231)
-plot_timestamp_stim(222, Catalog_222)
+stitchall %for both 231 and 222
+get_numi %for both 231 and 222
 
-%T_222_arr = table2array(T_222);
-%T_231_arr = table2array(T_231);
-
-
+[stimulated_231, scheduled_231] = filter_scheduled(Catalog_231, 231);
+[stimulated_222, scheduled_222] = filter_scheduled(Catalog_222, 222);
 
 %save('/Users/hp/GitHub/EEG/data/features', 'T_222_arr', 'T_231_arr', '-v7.3');
 features_222 = join(T_222, numi_T_222,'Keys','Var1');

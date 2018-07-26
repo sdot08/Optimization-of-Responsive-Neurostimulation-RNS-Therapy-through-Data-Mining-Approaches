@@ -1,6 +1,6 @@
 %output a table with each filename corresponds to the power of each band in 
 % each channel(28 features)
-data = Catalog_231;
+data = Catalog_222;
 files = data.Filename;
 channelPowers = zeros(height(data),28, 'double');
 for i = 1:length(files)
@@ -19,5 +19,5 @@ for i = 1:length(files)
         disp('not found')
     end
 end
-T_231 = table(data.Filename, data.Timestamp_int, channelPowers);
+T_222 = table(data.Filename, data.Timestamp_int, channelPowers);
 
