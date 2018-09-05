@@ -60,7 +60,7 @@ if if_plot
     xlabel('Time (sec)');
     set(gca, 'YTick', dat_means, 'YTickLabel', ytk_lb);
     title(['Patient 231, Datatime: ' num2str(label)])
-    fig_name = ['/Users/hp/Desktop/summer research/ForByron_060618/fig/artifact_sample/' num2str(label) '.png'];
-    %export_fig(fig_name, '-a1', '-nocrop');
+    fig_name = ['/Users/hp/Github/EEG/fig/high_gamma_sample/' num2str(label) '.png'];
+    export_fig(fig_name, '-a1', '-nocrop');
 end
 
