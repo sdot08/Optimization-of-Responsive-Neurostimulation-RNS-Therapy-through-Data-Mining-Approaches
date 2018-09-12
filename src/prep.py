@@ -107,5 +107,3 @@ def dat_agg(dat):
     
     return dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste
 
-def epoch2label(dat, epoch_label_dict)
-    dat.loc[:,'label'] = dat.loc[:,'epoch'].apply(lambda x: epoch_label_dict[x])
