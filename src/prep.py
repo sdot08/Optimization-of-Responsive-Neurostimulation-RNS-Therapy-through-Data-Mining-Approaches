@@ -13,13 +13,15 @@ col_rs = hp.col_rs
 col_es = hp.col_es
 col_le = hp.col_le
 
+#str2date, add date column
 def prep_daily(dat):
     # convert string to date
     dat = JJ.df_str2date(dat, hp.col_rs)
     # add the date of the datatime to the new date column
     dat.loc[:,'date'] = dat.loc[:,hp.col_rs].apply(lambda x: x.date())
-    return dat	
+    return dat
 
+#str2date, add date column, logduration
 def prep_duration(dat):
     # convert string to date
     dat = JJ.df_str2date(dat, hp.col_rs)
@@ -29,7 +31,7 @@ def prep_duration(dat):
     dat.loc[:,'logduration'] = dat.loc[:,'duration'].apply(lambda x: np.log(x))
     return dat
 
-
+#usage dat.loc[filtertime(dat, col, dstart, dend),:]
 def filtertime(dat, col, start_date, end_date):
     return np.array(start_date <= dat[col]) & \
          np.array(dat[col] <= end_date)
@@ -55,7 +57,7 @@ def firstnorm(dat, col):
     dat.loc[:,col] = dat[col] / base
     return dat, base
 
-def prep_daily2(dat, pat_list):
+def prep_daily2(dat, pat):
     #output processes dataframe and epoch_label dict with key = patid
     data_2_dict, epoch_label_dict, epoch_label_epi_dict = {}, {}, {}
     dat.loc[:,col_rs] = pd.to_datetime(dat.loc[:,col_rs])
@@ -63,7 +65,7 @@ def prep_daily2(dat, pat_list):
         pat_id = pat.id
         epoch_info = pat.epoch_info
         data_0 = dat.loc[dat.loc[:,'id'] == pat_id,:]
-        data_1 = addepoch(dat, hp.tcol, epoch_info['start'], epoch_info['end'], epoch_info['num_per_epoch'])
+        data_1 = addepoch(dat, col_rs, epoch_info['start'], epoch_info['end'], epoch_info['num_per_epoch'])
         data_2, epoch_label_var, epoch_label_epi_var = epoch_label(data_1)
         data_2_dict[pat_id] = data_2
         epoch_label_epi_dict[pat_id] = epoch_label_epi_var

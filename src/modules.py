@@ -1,8 +1,16 @@
+import pandas as pd
+import numpy as np
+import h5py
+from sklearn.cross_validation import train_test_split
+from sklearn import preprocessing
+
+
+import jj_basic_fn as JJ
 from hyperparams import Hyperparams as hp
 from patient import patient
 import prep
-import pandas as pd
-import h5py
+import plot_funcs 
+
 
 def build_patients():
     col_rs = hp.col_rs
@@ -78,5 +86,38 @@ def build_patients():
     	pat.add_features(f, f_s)
     return p231, p222_1, p222_2, p222_3
 
+
+def remove_outliers(dat, thres = 5000):
+    num_dat = dat.shape[0]
+    drop_list = ['filename','label', 'region_start_time', 'id', 'epoch', 'if_stimulated', 'i12', 'i34']
+    for col in dat.drop(drop_list, axis = 1).columns.values:
+        bol = dat.loc[:, col] - np.mean(dat.loc[:, col]) < hp.param_outliers * dat.loc[:, col].std()
+        dat = dat.loc[bol,:]
+    bol = dat.loc[:, 'beta2'] < 400
+    dat = dat.loc[bol,:]
+    num_output = dat.shape[0]
+    print('Total outliers removed: {}'.format(num_dat - num_output))
+
+    return dat
+
+def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, random_state=42):
+    dat_0 = pat.features
+    dat = remove_outliers(dat_0)
+    y = dat.loc[:,'label']
+    drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id']
+    if if_remove_icd:
+        drop_list.append('i12')
+        drop_list.append('i34')
+    X = dat.drop(drop_list, axis = 1, inplace = False)
+    
+    y=y.astype('int')
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
+    scaler = preprocessing.StandardScaler().fit(X_train)
+    if if_scaler:
+        X_train = scaler.transform(X_train)
+        X_test = scaler.transform(X_test)    
+    
+        
+    return X_train, X_test, y_train, y_test
 
 

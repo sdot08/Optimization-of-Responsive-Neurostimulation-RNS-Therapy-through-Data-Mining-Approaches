@@ -7,6 +7,14 @@ class Hyperparams:
     col_rs = 'region_start_time'
     col_es = 'episode_starts'
     col_le = 'long_episodes'
+
+
+    prepath_pat = '../patients/'
+
+    num_classifier = 7
+
+    param_outliers = 6
+
     #produce column name including filename, powerband for four channels and interictal discharges
     powbands = ['delta', 'theta', 'alpha', 'beta', 'low_gamma', 'high_gamma', 'all']
     col_names = ['filename', col_rs]
