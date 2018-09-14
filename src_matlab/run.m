@@ -1,11 +1,22 @@
 %%import data from the file NYU_ECoG_Catalog.csv to table Catalog
 import_data;
+
 % convert convert the value in column 'RawLocalTimestamp' from str to
-% integer for patient 222 and patient 231
+% integer
 Catalog_222 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 222);
 Catalog_231 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 231);
-stitchall %for both 231 and 222
-get_numi %for both 231 and 222
+
+data_list = {Catalog_231};
+label_list = {231};
+for i=1:length(data_list)
+  data_0 = data_list{i};
+  label = label_list{i};
+  data_1 = stitchall(data_0);
+  [stimulated, scheduled] = filter_scheduled(data_0, label);
+  
+end
+
+
 
 [stimulated_231, scheduled_231] = filter_scheduled(Catalog_231, 231);
 [stimulated_222, scheduled_222] = filter_scheduled(Catalog_222, 222);

@@ -5,7 +5,7 @@
 %% determine the logical output by look at whether if the wave contains a flat 
 %% region
 
-function eeg_s = stitch(filename, if_plot, label)
+function eeg_s = stitch(filename, if_plot)
 fs = 250; % Sampling rate
 
 data = readPersystDat(filename);
@@ -82,8 +82,8 @@ if if_plot
     xlim([t(1) t(end)]);
     xlabel('Time (sec)');
     set(gca, 'YTick', dat_means, 'YTickLabel', ytk_lb);
-    title(['Patient 231, Datatime: ' num2str(label)])
-    fig_name = ['/Users/hp/Desktop/summer research/ForByron_060618/fig/artifact_sample/' num2str(label) '.png'];
+    %title(['Patient 231, Datatime: ' num2str(label)])
+    %fig_name = ['/Users/hp/Desktop/summer research/ForByron_060618/fig/artifact_sample/' num2str(label) '.png'];
     %export_fig(fig_name, '-a1', '-nocrop');
 end
 

@@ -26,6 +26,7 @@ disp(time_masks)
 for i = 1:height(data)
     
     datai =data(i,:);
+    %not real time data
     if datai.ECoGtype == 'real-time'
         b(i) = 1;
         continue
