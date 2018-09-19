@@ -83,7 +83,7 @@ def build_patients():
     #f_s = h5py.File('../data/features_sti.mat', 'r')
     #pat_list = [p231, p222_1, p222_2, p222_3]
     for pat in pat_list:    
-        f = h5py.File('../data/features_' + pat.id + '.mat', 'r')
+        f = h5py.File('../data/features_' + pat.pat_id + '.mat', 'r')
         pat.add_features(f)
     return p231, p222_1, p222_2, p222_3
 
@@ -103,6 +103,7 @@ def remove_outliers(dat, thres = 5000):
 
 def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, random_state=42):
     dat_0 = pat.features
+    # remove outliers
     dat = remove_outliers(dat_0)
     y = dat.loc[:,'label']
     drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id']

@@ -6,16 +6,15 @@ from hyperparams import Hyperparams as hp
 
 class patient():
     def __init__(self, id):
-        self.id = id
-        self.pat_id = id.split('_')[0]
-        self.duration = None
-        self.daily = None
-        self.hasduration = False
-        self.hasdaily = False
-        self.result = {}
-        self.estimator = {}
-        self.score = {}
-        self.params = {}
+        self.id = id  #string id for the patient, example: 222_1. 231
+        self.pat_id = id.split('_')[0] #string id for the patient, example: 222, 231
+        self.duration = None #dataframe that contain duration information for the patient
+        self.daily = None  #dataframe that contain daily count information for the patient
+        self.features = None #dataframe that contain features
+        self.result = {}  #cross validation results
+        self.estimator = {} #best estimator
+        self.score = {} #best validation scores
+        self.params = {} # params for the estimator
 
     def add_epochinfo(self, start, end, num_per_epoch):
         self.epoch_info = {}
@@ -40,15 +39,15 @@ class patient():
     def add_features(self, f):
         #column name including filename, powerband for four channels and interictal discharges
         col_names = hp.col_names
-        pat_id = self.pat_id
+        pat_id = self.id
 
         matlab_features_name = 'T_arr_scheduled'
         features_0 = pd.DataFrame(np.array(f[matlab_features_name]).T, columns = col_names)
         # all if_sti is False, for the purpose of convenience, since we are not using them
-        features_1 = self.add_features_helper(features_nsti_0, False)
+        features_1 = self.add_features_helper(features_0, False)
 
 
-        self.features = self.features_1
+        self.features = features_1
 
     
     def add_features_helper(self, fea, if_stimulated):
