@@ -1,6 +1,6 @@
 %%import data from the file NYU_ECoG_Catalog.csv to table Catalog
 import_data;
-pat_id_list = {222,231};
+pat_id_list = {201};
 for i = 1:length(pat_id_list)
     id = pat_id_list{i};
     Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
