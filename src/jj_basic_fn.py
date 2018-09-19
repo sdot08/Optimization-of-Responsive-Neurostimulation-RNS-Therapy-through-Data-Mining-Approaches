@@ -23,7 +23,6 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from scipy.optimize import minimize
 from sklearn.model_selection import GridSearchCV, PredefinedSplit
 from sklearn.model_selection import ParameterGrid
-from sklearn.metrics import mean_squared_error, make_scorer, roc_curve, auc
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -87,29 +86,18 @@ def save_object(obj, filename):
 
 
 
-def get_cmap(n, name='hsv'):
-    '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct 
-    RGB color; the keyword argument name must be a standard mpl colormap name.'''
-    return plt.cm.get_cmap('Spectral', n)
 
 
-def estimator_performance(classifier_int, X_test, y_test, patid, if_plot_c = 0, if_plot_roc = 0, plot_all = 0):
-    y_score, accuracy, y_pred, clf_name = load_score(classifier_int, X_test, y_test, patid)
-    if if_plot_c:
-        plot_funcs.show_confusion_matrix(y_test, y_pred, clf_name)
-    if if_plot_roc:
-        plot_roc(y_score, y_test)
-    return
 
-def scores_estimators(X_test, y_test, patid):
-    prepath = '../estimators/'+str(patid) + '/'
-    int2name = {1:'Logistic Regression', 2: 'SVM', 3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis', 5:'decision tree', 6:'random forest', 7:'gradient boosting'}
-    n_estimator = 7
+
+def scores_estimators(X_test, y_test, pat):
+    int2name = hp.int2name
+    n_estimator = hp.num_classifier
     auc_dict = {}
     acc_dict = {}
     estimators = [1,2,5,6,7]
     for i in estimators:
-        y_score, accuracy,_ , name = load_score(i, X_test, y_test, patid)
+        y_score, accuracy,_ , name = load_score(i, X_test, y_test, pat)
         fpr, tpr, _ = roc_curve(y_test, y_score)
         roc_auc = auc(fpr, tpr)
         #auc = pickle.load(open(prepath + 'Best_score_for_' + str(name) + '.p', "rb" ))
@@ -122,12 +110,10 @@ def scores_estimators(X_test, y_test, patid):
     display(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']))
 
 
-def load_score(classifier_int, X_test, y_test, patid):
-    prepath = '../estimators/'+str(patid) + '/'
-    int2name = {1:'Logistic Regression', 2: 'SVM', 3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis', 5:'decision tree', 6:'random forest', 7:'gradient boosting'}
+def load_score(classifier_int, X_test, y_test, pat):
+    int2name = hp.int2name
     clf_name = int2name[classifier_int]
-    clf = pickle.load(open(prepath + 'best_estimator_for_' + str(clf_name) + '.p', "rb" ))
-    score = pickle.load(open(prepath + 'Best_score_for_' + str(clf_name) + '.p', "rb" ))
+    clf = pat.estimator[classifier_int]
     y_pred = clf.predict(X_test)
     accuracy = clf.score(X_test, y_test)
     if classifier_int == 3 or classifier_int == 5 or classifier_int == 6:
@@ -139,7 +125,13 @@ def load_score(classifier_int, X_test, y_test, patid):
     return y_score, accuracy, y_pred, clf_name
 
 
-
+def estimator_performance(classifier_int, X_test, y_test, pat, if_plot_c = 0, if_plot_roc = 0, plot_all = 0):
+    y_score, accuracy, y_pred, clf_name = load_score(classifier_int, X_test, y_test, pat)
+    if if_plot_c:
+        plot_funcs.show_confusion_matrix(y_test, y_pred, clf_name)
+    if if_plot_roc:
+        plot_funcs.plot_roc(y_score, y_test)
+    return
 
 from sklearn.ensemble import VotingClassifier
 def ensemble_model(X_train,y_train,X_test, y_test, patid, if_save = 0):
@@ -149,7 +141,7 @@ def ensemble_model(X_train,y_train,X_test, y_test, patid, if_save = 0):
     estimators =  []
     for classifier_int in classifier_list:
       clf_name = int2name[classifier_int]
-      clf = pickle.load(open(prepath + 'best_estimator_for_' + str(clf_name) + '.p', "rb" ))
+      clf = pickle.load(open(prepath + 'best_estimator_for_' + str(classifier_int) + '.p', "rb" ))
       estimators.append((clf_name, clf))
     eclf = VotingClassifier(estimators=
             estimators, voting='hard')

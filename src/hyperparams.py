@@ -13,7 +13,12 @@ class Hyperparams:
 
     num_classifier = 7
 
-    param_outliers = 6
+    param_outliers = 5
+
+    if_scaler = 1
+    if_remove_icd = 1
+
+    int2name = {1:'Logistic Regression', 2: 'SVM', 3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis', 5:'decision tree', 6:'random forest', 7:'gradient boosting'}
 
     #produce column name including filename, powerband for four channels and interictal discharges
     powbands = ['delta', 'theta', 'alpha', 'beta', 'low_gamma', 'high_gamma', 'all']

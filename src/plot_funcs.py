@@ -6,8 +6,15 @@ from matplotlib import cm as cm
 import numpy as np
 import math
 import pandas as pd
+from sklearn.metrics import roc_curve, auc
 
+
+import jj_basic_fn as JJ
+import pandas as pd
+import numpy as np
+from hyperparams import Hyperparams as hp
 import prep
+
 def plot_epoch_mean(patient_list):
     for patient in patient_list:
         ptid = patient.id
@@ -94,7 +101,7 @@ def plot_roc(y_score, y_test, n_classes = 2):
     plt.show()
 
 
-def plot_roc_all(X_test, y_test, patid):
+def plot_roc_all(X_test, y_test, pat):
     classifier_list = [1,2,5,6,7]
     cmap = get_cmap(len(classifier_list))
     lw = 2
@@ -103,7 +110,7 @@ def plot_roc_all(X_test, y_test, patid):
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
     for i,classifier_int in enumerate(classifier_list):
 
-        y_score, accuracy, y_pred, clf_name = load_score(classifier_int, X_test, y_test, patid)
+        y_score, accuracy, y_pred, clf_name = JJ.load_score(classifier_int, X_test, y_test, pat)
         fpr, tpr, _ = roc_curve(y_test, y_score)
         roc_auc = auc(fpr, tpr)        
         
@@ -140,3 +147,9 @@ def correlation_matrix(df):
     # Add colorbar, make sure to specify tick locations to match desired ticklabels
     fig.colorbar(cax, ticks=[.75,.8,.85,.90,.95,1])
     plt.show()
+
+
+def get_cmap(n, name='hsv'):
+    '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct 
+    RGB color; the keyword argument name must be a standard mpl colormap name.'''
+    return plt.cm.get_cmap('Spectral', n)
