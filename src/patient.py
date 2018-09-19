@@ -37,24 +37,20 @@ class patient():
         self.epoch_label_epi_dict = epoch_label_epi_dict
         self.daily = data_2
 
-    def add_features(self, f, f_s):
+    def add_features(self, f):
         #column name including filename, powerband for four channels and interictal discharges
         col_names = hp.col_names
         pat_id = self.pat_id
 
-        matlab_features_name, matlab_sti_features_name = 'T_' + pat_id + '_arr_scheduled', 'T_' + pat_id + '_arr_scheduled_sti'
-        features_nsti_0 = pd.DataFrame(np.array(f[matlab_features_name]).T, columns = col_names)
-        features_sti_0 = pd.DataFrame(np.array(f_s[matlab_sti_features_name]).T, columns = col_names)
-        
-        features_nsti_1 = self.add_features_helper(features_nsti_0, False)
-        features_sti_1 = self.add_features_helper(features_sti_0, True)
+        matlab_features_name = 'T_arr_scheduled'
+        features_0 = pd.DataFrame(np.array(f[matlab_features_name]).T, columns = col_names)
+        # all if_sti is False, for the purpose of convenience, since we are not using them
+        features_1 = self.add_features_helper(features_nsti_0, False)
 
 
-        self.features_nsti = features_nsti_1
-        self.features_sti = features_sti_1
-        self.features = pd.concat([self.features_nsti,self.features_sti])
+        self.features = self.features_1
 
-
+    
     def add_features_helper(self, fea, if_stimulated):
         features = fea.copy()
         features.loc[:,hp.col_rs] = pd.to_datetime(features.loc[:,hp.col_rs], unit = 'd', origin=pd.Timestamp('2000-01-01'))

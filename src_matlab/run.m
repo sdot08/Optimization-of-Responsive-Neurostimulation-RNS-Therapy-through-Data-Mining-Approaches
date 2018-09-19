@@ -1,5 +1,19 @@
 %%import data from the file NYU_ECoG_Catalog.csv to table Catalog
 import_data;
+pat_id_list = {222,231};
+for i = 1:length(pat_id_list)
+    id = pat_id_list{i};
+    Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
+    T_power = stitchall(Catalog,id);
+    T_numi = get_numi(Catalog,id);
+    [stimulated, scheduled] = filter_scheduled(Catalog, id);
+    features_1 = join(T_power, T_numi,'Keys','Var1');
+    features_2 = table2array(features_1(:,[1,2,3,5]));
+    features_3 = table2array(features_1(:,[2,3,5]));
+    features = conv_dat2int(features_2, features_3);
+    T_arr_scheduled = features(ismember(features(:,2), scheduled),:);
+    save(strcat('/Users/hp/GitHub/EEG/data/features_', num2str(id)), 'T_arr_scheduled', '-v7.3');
+end
 % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer for patient 222 and patient 231
 Catalog_222 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 222);

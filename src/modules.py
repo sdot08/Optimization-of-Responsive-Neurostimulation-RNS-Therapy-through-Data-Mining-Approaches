@@ -79,11 +79,12 @@ def build_patients():
     p222_3.add_daily(daily_222)
     p231.add_daily(daily_231)
 
-    f = h5py.File('../data/features.mat', 'r')
-    f_s = h5py.File('../data/features_sti.mat', 'r')
     
-    for pat in pat_list:	
-    	pat.add_features(f, f_s)
+    #f_s = h5py.File('../data/features_sti.mat', 'r')
+    #pat_list = [p231, p222_1, p222_2, p222_3]
+    for pat in pat_list:    
+        f = h5py.File('../data/features_' + pat.id + '.mat', 'r')
+        pat.add_features(f)
     return p231, p222_1, p222_2, p222_3
 
 
