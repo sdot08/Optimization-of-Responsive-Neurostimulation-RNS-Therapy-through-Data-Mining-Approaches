@@ -134,14 +134,13 @@ def estimator_performance(classifier_int, X_test, y_test, pat, if_plot_c = 0, if
     return
 
 from sklearn.ensemble import VotingClassifier
-def ensemble_model(X_train,y_train,X_test, y_test, patid, if_save = 0):
-    prepath = '../estimators/'+str(patid) + '/'
+def ensemble_model(X_train,y_train,X_test, y_test, pat, if_save = 0):
     int2name = {1:'Logistic Regression', 2: 'SVM', 3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis', 5:'decision tree', 6:'random forest', 7:'gradient boosting'}
     classifier_list = [1,2,6,7]
     estimators =  []
     for classifier_int in classifier_list:
       clf_name = int2name[classifier_int]
-      clf = pickle.load(open(prepath + 'best_estimator_for_' + str(classifier_int) + '.p', "rb" ))
+      clf = pat.estimator[classifier_int]
       estimators.append((clf_name, clf))
     eclf = VotingClassifier(estimators=
             estimators, voting='hard')
@@ -152,43 +151,7 @@ def ensemble_model(X_train,y_train,X_test, y_test, patid, if_save = 0):
     accuracy = clf.score(X_test, y_test)
     print(accuracy)
 
-def feature_importance_logistic(patid):
-    prepath = '../estimators/'+str(patid) + '/'
-    classifier_int = 1
-    int2name = {1:'Logistic Regression', 2: 'SVM', 3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis', 5:'decision tree', 6:'random forest', 7:'gradient boosting'}
-    clf_name = int2name[classifier_int]
-    clf = pickle.load(open(prepath + 'best_estimator_for_' + str(clf_name) + '.p', "rb" ))
-    coef = np.abs(clf.coef_.reshape(4,7))
-    powerband = ['delta', 'theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all']
-    channel = ['1', '2','3','4',]
-    df = pd.DataFrame(coef, index = channel, columns = powerband)
-    fig = plt.figure()
-    fig, ax = plt.subplots(1,1, figsize=(10,10))
-    r = sns.heatmap(coef, cmap = "Blues")
-    r.set_title("Heatmap of the coefficients of logistical regression")
-    ax.set_yticklabels(df.index)
-    ax.set_xticklabels(df.columns)
-    sns.plt.show()
 
-
-def feature_importance_sgb(patid):
-    prepath = '../estimators/'+str(patid) + '/'
-    classifier_int = 7
-    int2name = {1:'Logistic Regression', 2: 'SVM', 3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis', 5:'decision tree', 6:'random forest', 7:'gradient boosting'}
-    clf_name = int2name[classifier_int]
-    clf = pickle.load(open(prepath + 'best_estimator_for_' + str(clf_name) + '.p', "rb" ))
-    coef = np.abs(clf.feature_importances_.reshape(4,7))
-    powerband = ['delta', 'theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all']
-    channel = ['1', '2','3','4',]
-    df = pd.DataFrame(coef, index = channel, columns = powerband)
-    import seaborn as sns
-    fig = plt.figure()
-    fig, ax = plt.subplots(1,1, figsize=(10,10))
-    r = sns.heatmap(coef, cmap = "Blues")
-    r.set_title("Heatmap of the coefficients of {}".format(clf_name))
-    ax.set_yticklabels(df.index)
-    ax.set_xticklabels(df.columns)
-    sns.plt.show()
 
 
 def select_data(dat, select_dict = None, keep_list = None):

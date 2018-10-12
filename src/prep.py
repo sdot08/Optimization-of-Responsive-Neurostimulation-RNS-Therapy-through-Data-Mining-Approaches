@@ -47,6 +47,7 @@ def addepoch(dat, col, start, end, num_per_epoch):
         date_tup = dates[i]
         dstart, dend = date_tup[0],date_tup[1]
         dat.loc[filtertime(dat, col, dstart, dend),'epoch'] = int(i)
+
     data = dat[np.array(start <= dat.loc[:,col]) & \
          np.array(dat.loc[:,col] <= end)]
     data.loc[:,'epoch'] = data.loc[:,'epoch'].astype(int)

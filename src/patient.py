@@ -40,8 +40,10 @@ class patient():
         #column name including filename, powerband for four channels and interictal discharges
         col_names = hp.col_names
         pat_id = self.id
-
         matlab_features_name = 'T_arr_scheduled'
+        a = np.array(f[matlab_features_name]).T
+
+
         features_0 = pd.DataFrame(np.array(f[matlab_features_name]).T, columns = col_names)
         # all if_sti is False, for the purpose of convenience, since we are not using them
         features_1 = self.add_features_helper(features_0, False)
@@ -54,6 +56,7 @@ class patient():
         features = fea.copy()
         features.loc[:,hp.col_rs] = pd.to_datetime(features.loc[:,hp.col_rs], unit = 'd', origin=pd.Timestamp('2000-01-01'))
         features = prep.addepoch(features, hp.col_rs,self.epoch_info['start'], self.epoch_info['end'], self.epoch_info['num_per_epoch'])
+        
         for key in self.epoch_label_dict:
             val = self.epoch_label_dict[key]
             features.loc[features.loc[:,'epoch'] == key,'label'] = val

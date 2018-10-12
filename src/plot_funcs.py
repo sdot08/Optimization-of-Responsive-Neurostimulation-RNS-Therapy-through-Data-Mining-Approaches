@@ -118,13 +118,15 @@ def plot_roc_all(X_test, y_test, pat):
                lw=lw, label='%s (AUC = %0.2f)' % (clf_name, roc_auc))
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title('Receiver operating characteristic curve')
-    box = ax.get_position()
-    ax.set_position([box.x0, box.y0 + box.height * 0.0 , box.width, box.height * 1])
-    ax.legend(loc = 'upper center', bbox_to_anchor = (0.5, -0.15), fancybox = True, 
-              shadow = True, ncol = 4, prop = {'size':10})
+        plt.xlabel('False Positive Rate', fontsize=hp.label_fontsize)
+        plt.ylabel('True Positive Rate', fontsize=hp.label_fontsize)
+        plt.title('Receiver operating characteristic curve', fontsize=hp.label_fontsize)
+    # box = ax.get_position()
+    # ax.set_position([box.x0, box.y0 + box.height * 0.0 , box.width, box.height * 1])
+    # ax.legend(loc = 'upper center', bbox_to_anchor = (0.5, -0.15), fancybox = True, 
+    #           shadow = True, ncol = 4, prop = {'size':10})
+    plt.legend(prop={'size': 14})
+    plt.savefig(hp.prepath_cp + pat.id + '_' + 'roc')
     plt.show()
 
 
@@ -153,3 +155,28 @@ def get_cmap(n, name='hsv'):
     '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct 
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
     return plt.cm.get_cmap('Spectral', n)
+
+def feature_importance(pat, classifier_int):
+    
+    int2name = hp.int2name
+    clf_name = int2name[classifier_int]
+    clf = pat.estimator[classifier_int]
+    classifier_type1 = [1]
+    classifier_type2 = [6,7]
+    if classifier_int in classifier_type1:
+        coef = clf.coef_.reshape(7,4)
+    elif classifier_int in classifier_type2:
+        coef = np.abs(clf.feature_importances_.reshape(7,4))
+    powerband = ['delta', 'theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all'][::-1]
+    channel = ['1', '2', '3', '4']
+    df = pd.DataFrame(coef, index = powerband, columns = channel)
+    import seaborn as sns
+    fig = plt.figure()
+    fig, ax = plt.subplots(1,1, figsize=(10,10))
+    r = sns.heatmap(coef)
+    r.set_title("Heatmap of the feature importance of {}".format(clf_name), fontsize=hp.label_fontsize)
+    ax.set_yticklabels(df.index, fontsize=hp.label_fontsize-5)
+    ax.set_xticklabels(df.columns, fontsize=hp.label_fontsize-2)
+    if classifier_int == 1:
+        plt.savefig(hp.prepath_cp + pat.id + '_' + 'fi')
+    plt.show()
