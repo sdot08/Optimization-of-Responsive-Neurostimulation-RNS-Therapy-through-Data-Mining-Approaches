@@ -11,6 +11,7 @@ class Hyperparams:
 
     prepath_pat = '../patients/'
     prepath_cp = '../fig/classifier_performance/'
+    prepath_sleep = '../fig/sleep/'
     num_classifier = 7
 
     param_outliers = 5

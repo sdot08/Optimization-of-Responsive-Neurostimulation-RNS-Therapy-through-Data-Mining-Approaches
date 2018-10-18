@@ -1,21 +1,26 @@
 %%import data from the file NYU_ECoG_Catalog.csv to table Catalog
 import_data;
-pat_id_list = {201};
+pat_id_list = {229};
 for i = 1:length(pat_id_list)
-    id = pat_id_list{i};
+    id = pat_id_list{i};    
+    prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
+    % convert convert the value in column 'RawLocalTimestamp' from str to
+% integer
     Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
-    T_power = stitchall(Catalog,id);
-    T_numi = get_numi(Catalog,id);
-    [stimulated, scheduled] = filter_scheduled(Catalog, id);
-    features_1 = join(T_power, T_numi,'Keys','Var1');
-    features_2 = table2array(features_1(:,[1,2,3,5]));
-    features_3 = table2array(features_1(:,[2,3,5]));
+    T_power = stitchall(Catalog,id, prepath);
+    T_numi = get_numi(Catalog,id, prepath);
+    %[stimulated, scheduled] = filter_scheduled(Catalog, id, prepath);
+    [sche_dates, sti_dates, all_dates] = dummy2bool(Catalog, 'ECoGtrigger', 'Timestamp_int', 'Scheduled');
+    T_S = get_sleep(Catalog);
+    
+    features_1 = join(T_S, join(T_power, T_numi,'Keys','Var1'), 'Keys','Var1');
+    features_2 = table2array(features_1(:,[1,2,3,5,7]));
+    features_3 = table2array(features_1(:,[2,3,5,7]));
     features = conv_dat2int(features_2, features_3);
-    T_arr_scheduled = features(ismember(features(:,2), scheduled),:);
+    T_arr_scheduled = features(ismember(features(:,2), sche_dates),:);
     save(strcat('/Users/hp/GitHub/EEG/data/features_', num2str(id)), 'T_arr_scheduled', '-v7.3');
 end
-% convert convert the value in column 'RawLocalTimestamp' from str to
-% integer for patient 222 and patient 231
+
 Catalog_222 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 222);
 Catalog_231 = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', 231);
 stitchall %for both 231 and 222

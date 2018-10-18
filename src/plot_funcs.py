@@ -7,6 +7,7 @@ import numpy as np
 import math
 import pandas as pd
 from sklearn.metrics import roc_curve, auc
+import six
 
 
 import jj_basic_fn as JJ
@@ -173,10 +174,40 @@ def feature_importance(pat, classifier_int):
     import seaborn as sns
     fig = plt.figure()
     fig, ax = plt.subplots(1,1, figsize=(10,10))
-    r = sns.heatmap(coef)
+    r = sns.heatmap(coef, cmap=plt.cm.Blues)
     r.set_title("Heatmap of the feature importance of {}".format(clf_name), fontsize=hp.label_fontsize)
     ax.set_yticklabels(df.index, fontsize=hp.label_fontsize-5)
     ax.set_xticklabels(df.columns, fontsize=hp.label_fontsize-2)
     if classifier_int == 1:
         plt.savefig(hp.prepath_cp + pat.id + '_' + 'fi')
     plt.show()
+
+
+def render_mpl_table(data, col_width=3.0, row_height=0.625, font_size=14,
+                     header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
+                     bbox=[0, 0, 1, 1], header_columns=0,
+                     ax=None, label = None,**kwargs):
+    #plt.figure()
+    if ax is None:
+        size = (np.array(data.shape[::-1]) + np.array([0, 1])) * np.array([col_width, row_height])
+        fig, ax = plt.subplots(figsize=size)
+        ax.axis('off')
+
+    mpl_table = ax.table(cellText=data.values, bbox=bbox, colLabels=data.columns, **kwargs)
+
+    mpl_table.auto_set_font_size(False)
+    mpl_table.set_fontsize(font_size)
+
+    for k, cell in  six.iteritems(mpl_table._cells):
+        cell.set_edgecolor(edge_color)
+        if k[0] == 0 or k[1] < header_columns:
+            cell.set_text_props(weight='bold', color='w')
+            cell.set_facecolor(header_color)
+        else:
+            cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
+    if label != None:
+        plt.title(label, fontsize=hp.label_fontsize)
+    plt.savefig(hp.prepath_sleep + label)
+    plt.show()
+    return 
+

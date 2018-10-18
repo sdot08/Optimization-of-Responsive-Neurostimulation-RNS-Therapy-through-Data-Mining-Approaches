@@ -1,6 +1,6 @@
 %output a table with each filename corresponds to the power of each band in 
 % each channel(28 features)
-function numi_T = get_numi(data, id)
+function numi_T = get_numi(data, id, prepath)
 warning('off','all')
 %data = Catalog_222;
 files = data.Filename;
@@ -8,7 +8,6 @@ files = data.Filename;
 numi = zeros(height(data),2, 'double');
 for i = 1:length(files)
     filename = files(i);
-    prepath = '/Users/hp/GitHub/EEG/datdata/';
     path = strcat(prepath, filename);
     %check if the file exists
     if exist(path, 'file') == 2

@@ -90,7 +90,7 @@ def save_object(obj, filename):
 
 
 
-def scores_estimators(X_test, y_test, pat):
+def scores_estimators(X_test, y_test, pat, label = None):
     int2name = hp.int2name
     n_estimator = hp.num_classifier
     auc_dict = {}
@@ -106,8 +106,11 @@ def scores_estimators(X_test, y_test, pat):
         
     sorted_auc_dict = sorted(auc_dict.items(), key=operator.itemgetter(1), reverse=True)
     sorted_acc_dict = sorted(acc_dict.items(), key=operator.itemgetter(1), reverse=True)
-    display(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']))
-    display(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']))
+    plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), label = label)
+    plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), label = label)
+
+    #display(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']))
+    # display(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']))
 
 
 def load_score(classifier_int, X_test, y_test, pat):

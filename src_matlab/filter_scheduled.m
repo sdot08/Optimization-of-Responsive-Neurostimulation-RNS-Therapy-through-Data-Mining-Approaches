@@ -1,7 +1,6 @@
-function [stimulated, scheduled] = filter_scheduled(data_raw, pt_ID)
+function [stimulated, scheduled] = filter_scheduled(data_raw, pt_ID, prepath)
 data = data_raw(:,[6, 7, end] );
 
-prepath = '/Users/hp/GitHub/EEG/datdata/';
 b = zeros(height(data), 1);
 thres = 1/24/2/2;
 switch pt_ID
@@ -69,6 +68,6 @@ xlabel('Time during day');
 ylabel('Date (MM/DD/YY)');
 title(['Patient ID: ' num2str(pt_ID)])
 hold off
-fig_name = ['/Users/hp/GitHub/EEG/fig/' num2str(pt_ID) '_DAT_time_date.png'];
+fig_name = ['/Users/hp/GitHub/EEG/fig/' num2str(pt_ID) 'DAT_time_date.png'];
 export_fig(fig_name, '-a1', '-nocrop');
 

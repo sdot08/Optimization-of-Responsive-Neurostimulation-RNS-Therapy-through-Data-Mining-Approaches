@@ -5,7 +5,7 @@
 %% determine the logical output by look at whether if the wave contains a flat 
 %% region
 
-function flag_stim = stim_detection_c(filename, if_plot, label)
+function ind = stim_detection_c(filename, if_plot, label, ns)
 
 disp(filename)
 fs = 250; % Sampling rate
@@ -31,7 +31,13 @@ data_diff = diff(data,[],1);
 diff_logical = all(data_diff == 0, 2);
 % check if the number of consecutive 0s in diff_logical is more than threshold
 % if so, output true, else, output false 
-for i = 1:length(diff_logical)-thres
+if ns == 0
+    iend = length(diff_logical)-thres;
+else
+    iend = ns * fs;
+end
+ind = 0;
+for i = 1:iend
     if all(diff_logical(i:i+thres) == 1) 
         flag_stim = true;
         ind = i;
