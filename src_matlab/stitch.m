@@ -5,10 +5,9 @@
 %% determine the logical output by look at whether if the wave contains a flat 
 %% region
 
-function eeg_s = stitch(filename, if_plot, label)
+function eeg_s = stitch(data, if_plot, label)
 fs = 250; % Sampling rate
 
-data = readPersystDat(filename);
 t = (0:size(data,1)-1)/fs;
 
 dg_max = 1016;  %graph stuff

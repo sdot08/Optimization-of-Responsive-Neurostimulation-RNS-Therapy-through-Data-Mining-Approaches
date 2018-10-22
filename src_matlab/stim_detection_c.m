@@ -7,7 +7,7 @@
 
 function ind = stim_detection_c(filename, if_plot, label, ns)
 
-disp(filename)
+%disp(filename)
 fs = 250; % Sampling rate
 
 data = readPersystDat(filename);

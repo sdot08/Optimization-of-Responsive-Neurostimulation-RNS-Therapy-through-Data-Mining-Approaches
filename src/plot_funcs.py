@@ -157,7 +157,7 @@ def get_cmap(n, name='hsv'):
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
     return plt.cm.get_cmap('Spectral', n)
 
-def feature_importance(pat, classifier_int):
+def feature_importance(pat, classifier_int, label):
     
     int2name = hp.int2name
     clf_name = int2name[classifier_int]
@@ -175,11 +175,11 @@ def feature_importance(pat, classifier_int):
     fig = plt.figure()
     fig, ax = plt.subplots(1,1, figsize=(10,10))
     r = sns.heatmap(coef, cmap=plt.cm.Blues)
-    r.set_title("Heatmap of the feature importance of {}".format(clf_name), fontsize=hp.label_fontsize)
+    r.set_title("Feature importance heatmap of {} for {}".format(clf_name, label), fontsize=hp.label_fontsize -1)
     ax.set_yticklabels(df.index, fontsize=hp.label_fontsize-5)
     ax.set_xticklabels(df.columns, fontsize=hp.label_fontsize-2)
-    if classifier_int == 1:
-        plt.savefig(hp.prepath_cp + pat.id + '_' + 'fi')
+
+    plt.savefig(hp.prepath_cp + label + '_' + 'fi')
     plt.show()
 
 
