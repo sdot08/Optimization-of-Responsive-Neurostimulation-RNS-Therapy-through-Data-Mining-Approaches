@@ -85,4 +85,3 @@ if if_plot
     fig_name = ['/Users/hp/Desktop/summer research/ForByron_060618/fig/artifact_sample/' num2str(label) '.png'];
     %export_fig(fig_name, '-a1', '-nocrop');
 end
-

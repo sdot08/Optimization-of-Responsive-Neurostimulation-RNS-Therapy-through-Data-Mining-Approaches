@@ -7,7 +7,7 @@ ytk_lb     = cell(1, Nchan); %graph stuff channel name holder
 f_stim = figure;
 for ch = 1 : Nchan
     figure(f_stim);
-    xlabel('Time (sec)');
+    xlabel('Time (sec)/250');
     dat = data(:, ch);
     eeg = data(:,ch);
     addval = (ch-1)*(dg_max+100);

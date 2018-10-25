@@ -8,7 +8,7 @@
 % size(data,1);
 % stim_detection_c(path, 1, '', iend)
 
-function [idxs] = stim_firstns(data, prepath)
+function [idxs_out, f_le, t_le] = stim_firstns(data, prepath)
 
 fs = 250;
 le_cut = 4;
@@ -17,7 +17,7 @@ iend = 0;
 [filter_longepi, ph, ph] = dummy2bool(data, 'ECoGtrigger', 'Filename', 'Long_Episode');
 data_l = data(ismember(data(:,6),array2table(filter_longepi', 'VariableNames',{'Filename'})),:);
 files = data_l.Filename;
-times = data_l.RawLocalTimestamp;
+times = data_l.Timestamp_int;
 idxs = [];
 for i = 1:length(files)
     filename = files(i);
@@ -32,8 +32,9 @@ for i = 1:length(files)
     end
 end
 idxs_m = (idxs/fs)';
-% t_le = times(idxs_m - 2 > le_cut);
-% f_le = files(idxs_m - 2 > le_cut);
+t_le = times(idxs_m - 2 > le_cut);
+f_le = files(idxs_m - 2 > le_cut);
+idxs_out = idxs(idxs_m - 2 > le_cut);
 % idxs_out = files(idxs_m - 2 > le_cut);
 end
 

@@ -1,27 +1,33 @@
 %output a table with each filename corresponds to the power of each band in 
 % each channel(28 features)
-function T = stitchall(data, id, prepath, if_le)
+function [T,file_le, t_le] = stitchall(data, id, prepath, if_le)
 %data = Catalog_222;
 files = data.Filename;
+
 channelPowers = zeros(height(data),28, 'double');
-if if_le
-    temp, file_le = stim_firstns(Catalog, prepath);
-end
-for i = 1:length(files)
+[idxs, file_le, t_le] = stim_firstns(data, prepath);
+
+
+for i = 76:length(files)
+    disp(i)
     filename = files(i);
     path = strcat(prepath, filename);
     %check if the file exists
     %path = '/Users/hp/GitHub/EEG/datdata/130901185189430000.dat';
     if exist(path, 'file') == 2
-        data = readPersystDat(path);
+        data_eeg = readPersystDat(path);
         %get channel power for that particular file
         if if_le
+            disp(filename)
             if ismember(filename, file_le)
-                data = getfirstns(data);
+                idxx = find(file_le == filename);
+                idx = idxs(idxx);
+                disp(idx)
+                data_eeg = getfirstns(data_eeg, idx, 0);
             end
         end
-        data_eeg = stitch(data, 0, id);
-        channelPower = get_power_load(data_eeg);
+        data_eeg2 = stitch(data_eeg, 0, id);
+        channelPower = get_power_load(data_eeg2, if_le);
         channelPowers(i,:) = channelPower;
     else
         disp(filename)

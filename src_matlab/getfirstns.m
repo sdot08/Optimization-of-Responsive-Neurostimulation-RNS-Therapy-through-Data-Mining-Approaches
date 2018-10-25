@@ -5,10 +5,10 @@
 % data = readPersystDat(path);
 % getfirstns(data, 50, 1)
 %read the eeg segment file and output only the first t seconds 
-function output = getfirstns(data, t_c, if_plot)
-
+function output = getfirstns(data, idx, if_plot)
 fs = 250; % Sampling rate
-idx = t_c * fs;
+%get the eeg segments that are 2 seconds before the stimulation
+idx = idx - 2 * fs;
 
 output = data(1:idx, :);
 

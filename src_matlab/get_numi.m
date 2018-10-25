@@ -12,8 +12,9 @@ for i = 1:length(files)
     %check if the file exists
     if exist(path, 'file') == 2
         %get channel power for that particular file
-        data_eeg = stitch(path, 0, id);
-        [numi(i,1), numi(i,2)] = interictalplot(data_eeg, 0);
+        data_eeg = readPersystDat(path);
+        data_eegs = stitch(data_eeg, 0, id);
+        [numi(i,1), numi(i,2)] = interictalplot(data_eegs, 0);
     else
         disp('not found')
     end

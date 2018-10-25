@@ -98,7 +98,7 @@ def build_patients():
 
     
     #f_s = h5py.File('../data/features_sti.mat', 'r')
-    pat_list = [p231, p222_1, p222_2, p222_3]
+    pat_list = [p231, p222_1, p222_2, p222_3, p229]
     #pat_list = [p231, p222_1, p222_2, p222_3, p201_2, p229]
     for pat in pat_list:    
         f = h5py.File('../data/features_' + pat.pat_id + '.mat', 'r')
