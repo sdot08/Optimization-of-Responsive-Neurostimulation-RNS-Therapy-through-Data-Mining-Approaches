@@ -25,7 +25,7 @@ def build_patients():
     p222_2 = patient('222_2')
     p222_3 = patient('222_3')
     p231 = patient('231')
-    p229 = patient('229')
+    p229 = patient('229', local = 1)
 
     pat_list = [p231, p222_1, p222_2, p222_3, p229]
     #add epoch info
@@ -51,7 +51,7 @@ def build_patients():
 
     start_229 = datetime.strptime('Oct 9 2017', '%b %d %Y')
     end_229 = datetime.strptime('Aug 23 2018', '%b %d %Y')
-    num_per_epoch_229 = 31
+    num_per_epoch_229 = 7
 
     p231.add_epochinfo(start_231, end_231, num_per_epoch_231)
     p222_1.add_epochinfo(start_222_1, end_222_1, num_per_epoch_222_1)

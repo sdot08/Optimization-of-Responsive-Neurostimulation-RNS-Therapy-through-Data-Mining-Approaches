@@ -8,7 +8,7 @@ import math
 import pandas as pd
 from sklearn.metrics import roc_curve, auc
 import six
-
+import matplotlib
 
 import jj_basic_fn as JJ
 import pandas as pd
@@ -16,28 +16,39 @@ import numpy as np
 from hyperparams import Hyperparams as hp
 import prep
 
-def plot_epoch_mean(patient_list):
+def plot_epoch_mean(patient_list, if_bar = 0):
     for patient in patient_list:
         ptid = patient.id
         dat = patient.daily
         dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste = prep.dat_agg(dat)
-        plt.figure()
-        fig, ax = plt.subplots(1,1)
-        ax.set_xticks(range(dat_le_agg.shape[0]))
-        ax.set_xticklabels(range(1,dat_le_agg.shape[0] + 1))
-        plt.plot(dat_epi_agg, label = 'episodes start mean')
-        plt.plot(dat_epi_agg + dat_epi_agg_ste,linestyle='dashed', label = 'episodes start mean + sem')
-        plt.plot(dat_epi_agg - dat_epi_agg_ste,linestyle='dashed', label = 'episodes start mean - sem')
-        plt.plot(dat_le_agg, label = 'long episode mean')
-        plt.plot(dat_le_agg + dat_le_agg_ste,linestyle='dashed', label = 'long episode mean + sem')
-        plt.plot(dat_le_agg - dat_le_agg_ste,linestyle='dashed', label = 'long episode mean - sem')
-        #plt.title('Patient {0}: period {1} - {2}'.format(ptid, period_start, period_end))
-        plt.title('Patient {0}'.format(ptid))
-        plt.xlabel('epoch')
-        plt.ylabel('count(nomalized)')
-        plt.tight_layout()
-        plt.legend()
-        plt.show()
+        if if_bar:
+            epoch_label_dict = patient.epoch_label_dict
+            type(epoch_label_dict)
+            colors = [] #colors for plt.bar
+            for key, val in epoch_label_dict.items():
+                colors.append('green' if val else 'red')
+            plt.figure()
+            plt.bar(range(dat_le_agg.shape[0] - 1),np.array(dat_le_agg.iloc[:-1]), color = colors)
+            plt.xlabel('weeks')
+            plt.ylabel('mean long episode count')
+            plt.show()
+        else:
+            fig, ax = plt.subplots(1,1)
+            ax.set_xticks(range(dat_le_agg.shape[0]))
+            ax.set_xticklabels(range(1,dat_le_agg.shape[0] + 1))
+            plt.plot(dat_epi_agg, label = 'episodes start mean')
+            plt.plot(dat_epi_agg + dat_epi_agg_ste,linestyle='dashed', label = 'episodes start mean + sem')
+            plt.plot(dat_epi_agg - dat_epi_agg_ste,linestyle='dashed', label = 'episodes start mean - sem')
+            plt.plot(dat_le_agg, label = 'long episode mean')
+            plt.plot(dat_le_agg + dat_le_agg_ste,linestyle='dashed', label = 'long episode mean + sem')
+            plt.plot(dat_le_agg - dat_le_agg_ste,linestyle='dashed', label = 'long episode mean - sem')
+            #plt.title('Patient {0}: period {1} - {2}'.format(ptid, period_start, period_end))
+            plt.title('Patient {0}'.format(ptid))
+            plt.xlabel('weeks')
+            plt.ylabel('mean long episode count')
+            plt.tight_layout()
+            plt.legend()
+            plt.show()
 
 
 def plot_confusion_matrix(cm, classes = np.array(['good', 'bad']),

@@ -5,7 +5,7 @@ import prep
 from hyperparams import Hyperparams as hp
 
 class patient():
-    def __init__(self, id):
+    def __init__(self, id, local = 0):
         self.id = id  #string id for the patient, example: 222_1. 231
         self.pat_id = id.split('_')[0] #string id for the patient, example: 222, 231
         self.duration = None #dataframe that contain duration information for the patient
@@ -15,6 +15,7 @@ class patient():
         self.estimator = {} #best estimator
         self.score = {} #best validation scores
         self.params = {} # params for the estimator
+        self.local = local
 
     def add_epochinfo(self, start, end, num_per_epoch):
         self.epoch_info = {}
@@ -31,7 +32,7 @@ class patient():
         data0 = dat.loc[prep.filtertime(dat, hp.col_rs, self.epoch_info['start'], self.epoch_info['end']),:]
         epoch_info = self.epoch_info
         data_1 = prep.addepoch(dat, hp.col_rs, epoch_info['start'], epoch_info['end'], epoch_info['num_per_epoch'])
-        data_2, epoch_label_dict, epoch_label_epi_dict = prep.epoch_label(data_1)
+        data_2, epoch_label_dict, epoch_label_epi_dict = prep.epoch_label(data_1, local = self.local)
         self.epoch_label_dict = epoch_label_dict
         self.epoch_label_epi_dict = epoch_label_epi_dict
         self.daily = data_2
