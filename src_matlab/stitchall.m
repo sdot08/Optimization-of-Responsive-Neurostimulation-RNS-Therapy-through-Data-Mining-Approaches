@@ -8,8 +8,7 @@ channelPowers = zeros(height(data),28, 'double');
 [idxs, file_le, t_le] = stim_firstns(data, prepath);
 
 
-for i = 76:length(files)
-    disp(i)
+for i = 1:length(files)
     filename = files(i);
     path = strcat(prepath, filename);
     %check if the file exists
@@ -18,7 +17,6 @@ for i = 76:length(files)
         data_eeg = readPersystDat(path);
         %get channel power for that particular file
         if if_le
-            disp(filename)
             if ismember(filename, file_le)
                 idxx = find(file_le == filename);
                 idx = idxs(idxx);

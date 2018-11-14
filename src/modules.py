@@ -25,7 +25,8 @@ def build_patients():
     p222_2 = patient('222_2')
     p222_3 = patient('222_3')
     p231 = patient('231')
-    p229 = patient('229', local = 1)
+    # local means whether to use local(weekly) median as threshold
+    p229 = patient('229', local = 0)
 
     pat_list = [p231, p222_1, p222_2, p222_3, p229]
     #add epoch info
@@ -50,8 +51,8 @@ def build_patients():
     num_per_epoch_231 = 31
 
     start_229 = datetime.strptime('Oct 9 2017', '%b %d %Y')
-    end_229 = datetime.strptime('Aug 23 2018', '%b %d %Y')
-    num_per_epoch_229 = 7
+    end_229 = datetime.strptime('Aug 16 2018', '%b %d %Y')
+    num_per_epoch_229 = 30
 
     p231.add_epochinfo(start_231, end_231, num_per_epoch_231)
     p222_1.add_epochinfo(start_222_1, end_222_1, num_per_epoch_222_1)
@@ -90,6 +91,8 @@ def build_patients():
     #p201_2.add_duration(duration_201_2)
     #p229.add_duration(duration_229)
     #str2date, add date column
+
+    # add epoch to the dataframe, add label to the dataframe, produce epoch2label dict
     p222_1.add_daily(daily_222)
     p222_2.add_daily(daily_222)
     p222_3.add_daily(daily_222)
@@ -98,12 +101,12 @@ def build_patients():
 
     
     #f_s = h5py.File('../data/features_sti.mat', 'r')
-    pat_list = [p231, p222_1, p222_2, p222_3, p229]
-    #pat_list = [p231, p222_1, p222_2, p222_3, p201_2, p229]
+    #pat_list = [p229]
+    pat_list = [p231, p222_1, p222_2, p222_3, p201_2, p229]
     for pat in pat_list:    
         f = h5py.File('../data/features_' + pat.pat_id + '.mat', 'r')
         pat.add_features(f)
-    return p231, p222_1, p222_2, p222_3, p229
+    return p229
 
 
 def remove_outliers(dat, thres = 5000):
@@ -116,16 +119,20 @@ def remove_outliers(dat, thres = 5000):
         bol = dat.loc[:, col] - np.mean(dat.loc[:, col]) < hp.param_outliers * dat.loc[:, col].std()
         output = output.loc[bol,:]
     num_output = output.shape[0]
-    #print('Total outliers removed: {}'.format(num_dat - num_output))
+    print('Total outliers removed: {}'.format(num_dat - num_output))
 
-    return dat
+    return output
 
-def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, random_state=42, sleep_class = None):
+def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None):
     dat_0 = pat.features
     if sleep_class == 0:
         dat_0 = dat_0.loc[dat_0.loc[:,'sleep'] == 0,:]
     elif sleep_class == 1:
         dat_0 = dat_0.loc[dat_0.loc[:,'sleep'] == 1,:]
+    if le_class == 0:
+        dat_0 = dat_0.loc[dat_0.loc[:,'long_epi'] == 0,:]
+    elif le_class == 1:
+        dat_0 = dat_0.loc[dat_0.loc[:,'long_epi'] == 1,:]
     # remove outliers
     dat = remove_outliers(dat_0)
     y = dat.loc[:,'label']
@@ -136,6 +143,9 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     if if_remove_sleep:
         if 'sleep' in dat.columns:
             drop_list.append('sleep')
+    if if_remove_le:
+        if 'long_epi' in dat.columns:
+            drop_list.append('long_epi')
     X = dat.drop(drop_list, axis = 1, inplace = False)
     
     y=y.astype('int')

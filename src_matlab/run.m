@@ -4,6 +4,7 @@ pat_id_list = {229};
 if_le = 1;
 for i = 1:length(pat_id_list)
     id = pat_id_list{i};    
+    id = 222;
     prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
     % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
@@ -13,10 +14,11 @@ for i = 1:length(pat_id_list)
     %[stimulated, scheduled] = filter_scheduled(Catalog, id, prepath);
     [sche_dates, sti_dates, all_dates] = dummy2bool(Catalog, 'ECoGtrigger', 'Timestamp_int', 'Scheduled');
     T_S = get_sleep(Catalog);
+    T_l = get_longepi(Catalog);
     
-    features_1 = join(T_S, join(T_power, T_numi,'Keys','Var1'), 'Keys','Var1');
-    features_2 = table2array(features_1(:,[1,2,3,5,7]));
-    features_3 = table2array(features_1(:,[2,3,5,7]));
+    features_1 = join(T_l, join(T_S, join(T_power, T_numi,'Keys','Var1'), 'Keys','Var1'), 'Keys','Var1');
+    features_2 = table2array(features_1(:,[1,2,3,5,7,9]));
+    features_3 = table2array(features_1(:,[2,3,5,7,9]));
     features = conv_dat2int(features_2, features_3);
     dates_filter = [sche_dates, t_le.'];
     T_arr_scheduled = features(ismember(features(:,2), dates_filter),:);

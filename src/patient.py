@@ -27,7 +27,7 @@ class patient():
         output = dat.loc[prep.filtertime(dat, hp.col_rs, self.epoch_info['start'], self.epoch_info['end']),:]
         self.duration = output
 
-
+    # add epoch to the dataframe, add label to the dataframe, produce epoch2label dict
     def add_daily(self,dat):
         data0 = dat.loc[prep.filtertime(dat, hp.col_rs, self.epoch_info['start'], self.epoch_info['end']),:]
         epoch_info = self.epoch_info
@@ -43,8 +43,6 @@ class patient():
         pat_id = self.id
         matlab_features_name = 'T_arr_scheduled'
         a = np.array(f[matlab_features_name]).T
-
-
         features_0 = pd.DataFrame(np.array(f[matlab_features_name]).T, columns = col_names)
         # all if_sti is False, for the purpose of convenience, since we are not using them
         features_1 = self.add_features_helper(features_0, False)

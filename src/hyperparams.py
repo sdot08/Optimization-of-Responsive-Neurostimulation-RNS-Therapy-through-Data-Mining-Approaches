@@ -10,7 +10,6 @@ class Hyperparams:
 
 
     prepath_pat = '../patients/'
-    prepath_cp = '../fig/classifier_performance/'
     prepath_sleep = '../fig/sleep/'
     num_classifier = 7
 
@@ -23,11 +22,12 @@ class Hyperparams:
 
 
     #produce column name including filename, powerband for four channels and interictal discharges
-    powbands = ['delta', 'theta', 'alpha', 'beta', 'low_gamma', 'high_gamma', 'all']
-    col_names = ['filename', col_rs, 'sleep']
-    for powband in powbands:
+    powerbands = ['delta', 'theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all'][::-1]
+    channel = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4']    
+    col_names = ['filename', col_rs, 'long_epi', 'sleep']
+    for powerband in powerbands:
         for i in range(1,5):
-            col_names.append(powband+str(i))
+            col_names.append(powerband+str(i))
     col_names.append('i12')
     col_names.append('i34')   
 
@@ -35,4 +35,4 @@ class Hyperparams:
     drop_list = ['filename','label', 'region_start_time', 'id', 'epoch', 'if_stimulated', 'i12', 'i34']
 
 
-    label_fontsize = 18
+    label_fontsize = 22

@@ -1,3 +1,10 @@
+%col: col to filter
+%col_save: save the value that meet the condition to col_save
+%true_str: condition
+% A; table that store value == true_str
+% B; table that store value != true_str
+% C; table that store all value
+
 function [A, B, C] = dummy2bool(t, col, col_save, true_str)
 A = [];
 B = [];

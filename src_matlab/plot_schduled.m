@@ -1,3 +1,4 @@
+%plot_schduled(sti_dates, sche_dates, 231)
 function plot_schduled(stimulated, scheduled, pt_ID)
 stimulated_date = floor(stimulated);
 stimulated_4d = stimulated - stimulated_date;
@@ -8,7 +9,7 @@ stimulated_date = stimulated_date + datenum('01/01/2000', 'mm/dd/yyyy');
 scheduled_date = scheduled_date + datenum('01/01/2000', 'mm/dd/yyyy');
 %length_4d = length(Catalog_Time_4d);
 %x = linspace(1,length_4d, length_4d);
-f_h = figure('OuterPosition', [50 50 800 600]);
+%f_h = figure('OuterPosition', [50 50 800 600]);
 
 
 switch pt_ID
@@ -31,19 +32,19 @@ sched = [0,sched,1];
 sched_names = ['00:00',sched_names,'24:00'];
 
 
-figure('OuterPosition', [80 20 1400 1000]);
-scatter(stimulated_4d, stimulated_date, 'r')
-hold on
+figure('OuterPosition', [80 20 2200 1800]);
 scatter(scheduled_4d, scheduled_date, 'b')
+hold on
+scatter(stimulated_4d, stimulated_date, 'r')
 
 set(gca, 'XTick', sched, 'XTickLabel', sched_names);
 ytks = get(gca, 'YTick');
-set(gca, 'YTickLabel', datestr(ytks), 'FontSize',16, 'FontWeight','bold');
+set(gca, 'YTickLabel', datestr(ytks), 'FontSize',26, 'FontWeight','bold');
 
 xlabel('Time during day');
 ylabel('Date (DD/MM/YY)');
 legend('Scheduled','Other(Long episode, Magnet, etc. )')
-title(['Patient ID: ' num2str(pt_ID) '    Time vs Data for EEG segments'])
+title(['Patient ID: ' num2str(pt_ID) '    Time vs Date for EEG segments'])
 hold off
-fig_name = ['/Users/hp/GitHub/EEG/fig/scatter/' num2str(pt_ID) '_time_date.png'];
+fig_name = ['/Users/hp/GitHub/EEG/fig/scheduled/' num2str(pt_ID) '_time_date.png'];
 export_fig(fig_name, '-a1', '-nocrop');

@@ -90,7 +90,7 @@ def save_object(obj, filename):
 
 
 
-def scores_estimators(X_test, y_test, pat, label = None):
+def scores_estimators(X_test, y_test, pat, if_save = 0):
     int2name = hp.int2name
     n_estimator = hp.num_classifier
     auc_dict = {}
@@ -106,8 +106,8 @@ def scores_estimators(X_test, y_test, pat, label = None):
         
     sorted_auc_dict = sorted(auc_dict.items(), key=operator.itemgetter(1), reverse=True)
     sorted_acc_dict = sorted(acc_dict.items(), key=operator.itemgetter(1), reverse=True)
-    plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), label = label)
-    plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), label = label)
+    plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), pat = pat, label = 'AUC for patient {}'.format(pat.id), if_save = if_save)
+    plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), pat = pat, label = 'Accuracy for patient {}'.format(pat.id), if_save = if_save)
 
     #display(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']))
     # display(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']))
@@ -168,18 +168,6 @@ def select_data(dat, select_dict = None, keep_list = None):
     return data
 
 
-
-def get_scatter_plot_data(dat, patid, drop_list = [], if_remove_icd = 1):
-    dat = dat.loc[dat.loc[:,'patid'] == patid]
-    dlist = ['region_start_time', 'patid', 'epoch', 'filename']
-    dlist.extend(drop_list)
-    if if_remove_icd:
-        dlist.append('i12')
-        dlist.append('i34')
-    X = dat.drop(dlist, axis = 1, inplace = False)
-    X = add_label_sti(X)
-    #X.loc[:,'label'] = X.loc[:,'label'].apply(lambda x: int(x))
-    return X
 
 def get_variable_name(namelist):
     output = []

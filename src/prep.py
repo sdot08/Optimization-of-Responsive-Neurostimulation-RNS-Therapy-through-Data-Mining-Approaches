@@ -103,11 +103,7 @@ def epoch_label(dat, local = 0):
         for i in range(len(dat_le_agg) // window_size):
             start = i * window_size
             end = i * window_size + window_size - 1
-            print(end)
             mean = np.median(np.array(dat_le_agg.loc[start:end,hp.col_le]))
-            print(dat_le_agg.loc[start:end,hp.col_le])
-            print(dat_le_agg.loc[start:end,hp.col_le] < mean)
-            print(mean)
             means.append(mean)
             labels = list(np.array(dat_le_agg.loc[start:end,hp.col_le] < mean))
             #print(labels)
