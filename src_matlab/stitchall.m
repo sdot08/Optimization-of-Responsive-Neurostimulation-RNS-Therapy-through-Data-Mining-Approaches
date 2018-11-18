@@ -20,7 +20,6 @@ for i = 1:length(files)
             if ismember(filename, file_le)
                 idxx = find(file_le == filename);
                 idx = idxs(idxx);
-                disp(idx)
                 data_eeg = getfirstns(data_eeg, idx, 0);
             end
         end

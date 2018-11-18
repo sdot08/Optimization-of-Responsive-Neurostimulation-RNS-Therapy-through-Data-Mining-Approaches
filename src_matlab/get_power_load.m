@@ -10,8 +10,8 @@ Power_band{2} = [4 8];       %theta
 Power_band{3} = [8 12];      %alpha
 Power_band{4} = [12 25];     %beta
 Power_band{5} = [25 50];     %low gamma
-Power_band{6} = [50 124.9];  %high gamma
-Power_band{7} = [0.1 124.9];   %entire band
+Power_band{6} = [50 90];  %high gamma
+Power_band{7} = [0.1 90];   %entire band
 
 
 data_each_channel_delta = zeros(4,1, 'double');

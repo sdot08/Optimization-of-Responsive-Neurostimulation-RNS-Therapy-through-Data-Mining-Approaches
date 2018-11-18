@@ -136,7 +136,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     # remove outliers
     dat = remove_outliers(dat_0)
     y = dat.loc[:,'label']
-    drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id']
+    drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id', 'delta1',  'delta2',  'delta3', 'delta4']
     if if_remove_icd:
         drop_list.append('i12')
         drop_list.append('i34')
