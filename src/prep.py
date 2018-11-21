@@ -58,7 +58,7 @@ def firstnorm(dat, col):
     dat.loc[:,col] = dat[col] / base
     return dat, base
 
-def prep_daily2(dat, pat, local = 0):
+def prep_daily2(dat, pat):
     #output processes dataframe and epoch_label dict with key = patid
     data_2_dict, epoch_label_dict, epoch_label_epi_dict = {}, {}, {}
     dat.loc[:,col_rs] = pd.to_datetime(dat.loc[:,col_rs])
@@ -67,13 +67,13 @@ def prep_daily2(dat, pat, local = 0):
         epoch_info = pat.epoch_info
         data_0 = dat.loc[dat.loc[:,'id'] == pat_id,:]
         data_1 = addepoch(dat, col_rs, epoch_info['start'], epoch_info['end'], epoch_info['num_per_epoch'])
-        data_2, epoch_label_var, epoch_label_epi_var = epoch_label(data_1, local  = local)
+        data_2, epoch_label_var, epoch_label_epi_var = epoch_label(data_1)
         data_2_dict[pat_id] = data_2
         epoch_label_epi_dict[pat_id] = epoch_label_epi_var
         epoch_label_dict[pat_id] = epoch_label_var
     return data_2_dict, epoch_label_dict, epoch_label_epi_dict
 
-def epoch_label(dat, local = 0):
+def epoch_label(dat):
     #output dataframe with columns labels and labels_epi, dictionary(key: epoch, val: label)
     dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste = dat_agg(dat)
     n = dat_epi_agg.shape[0]
@@ -86,36 +86,17 @@ def epoch_label(dat, local = 0):
     for key_epi in epoch_label_epi:
         val_epi = epoch_label_epi[key_epi]
         dat.loc[dat['epoch'] == key_epi,'label_epi'] = val_epi
-    if not local:
     # generate label according to long episode
-        thres = np.median(dat_le_agg)
-        keys = list(np.array(dat_le_agg.index, dtype = int))
-        vals = list(np.array(dat_le_agg.loc[:,col_le] < thres))
-        epoch_label = dict(zip(keys, vals))
-        for key in epoch_label:
-            val = epoch_label[key]
-            dat.loc[dat['epoch'] == key,'label'] = val
-        return dat, epoch_label, epoch_label_epi
-    else:
-        window_size = 4
-        means = []
-        vals = []
-        for i in range(len(dat_le_agg) // window_size):
-            start = i * window_size
-            end = i * window_size + window_size - 1
-            mean = np.median(np.array(dat_le_agg.loc[start:end,hp.col_le]))
-            means.append(mean)
-            labels = list(np.array(dat_le_agg.loc[start:end,hp.col_le] < mean))
-            #print(labels)
-            vals += labels
-        
-        keys = list(np.array(dat_le_agg.index, dtype = int))
-        epoch_label = dict(zip(keys, vals))
-        for key in epoch_label:
-            val = epoch_label[key]
-            dat.loc[dat['epoch'] == key,'label'] = val
+    thres = np.median(dat_le_agg)
+    keys = list(np.array(dat_le_agg.index, dtype = int))
+    vals = list(np.array(dat_le_agg.loc[:,col_le] < thres))
+    epoch_label = dict(zip(keys, vals))
+    for key in epoch_label:
+        val = epoch_label[key]
+        dat.loc[dat['epoch'] == key,'label'] = val
+    return dat, epoch_label, epoch_label_epi
 
-        return dat, epoch_label, epoch_label_epi
+
 
 
 def dat_agg(dat):

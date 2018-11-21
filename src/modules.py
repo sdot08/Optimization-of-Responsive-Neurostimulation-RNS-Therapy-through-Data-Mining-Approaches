@@ -26,7 +26,7 @@ def build_patients():
     p222_3 = patient('222_3')
     p231 = patient('231')
     # local means whether to use local(weekly) median as threshold
-    p229 = patient('229', local = 0)
+    p229 = patient('229')
 
     pat_list = [p231, p222_1, p222_2, p222_3, p229]
     #add epoch info
@@ -51,8 +51,9 @@ def build_patients():
     num_per_epoch_231 = 31
 
     start_229 = datetime.strptime('Oct 9 2017', '%b %d %Y')
-    end_229 = datetime.strptime('Aug 16 2018', '%b %d %Y')
-    num_per_epoch_229 = 30
+    end_229 = datetime.strptime('Aug 23 2018', '%b %d %Y')
+    num_per_epoch_229 = 31
+
 
     p231.add_epochinfo(start_231, end_231, num_per_epoch_231)
     p222_1.add_epochinfo(start_222_1, end_222_1, num_per_epoch_222_1)
@@ -72,26 +73,12 @@ def build_patients():
     duration_229_1 = pd.read_csv(prepath + '229_duration.csv', skiprows=3)
 
 
-    #duration_222 = prep.prep_duration(pd.concat([duration_222_1, duration_222_2, duration_222_3]))
-    #duration_231 = prep.prep_duration(pd.concat([duration_231_1, duration_231_2]))
-    #duration_201 = prep.prep_duration(duration_201_1)
-    #duration_229 = prep.prep_duration(duration_229_1)
-
-
     daily_222 = prep.prep_daily(pd.read_csv(prepath + 'NY222_2015-08-11_to_2018-06-12_daily_20180613153105.csv', skiprows=3))
     daily_231 = prep.prep_daily(pd.read_csv(prepath + 'NY231_2016-07-05_to_2018-06-12_daily_20180613153815.csv', skiprows=3))
     daily_229 = prep.prep_daily(pd.read_csv(prepath + 'NY229_2017-05-12_to_2018-09-07_daily_20180907183334.csv', skiprows=3))
 
-    #str2date, add date column, logduration
-    #p222_1.add_duration(prep.prep_duration(duration_222))
-    #p222_2.add_duration(prep.prep_duration(duration_222))
-    #p222_3.add_duration(prep.prep_duration(duration_222))
-    #p231.add_duration(duration_231)
-    #p201_1.add_duration(duration_201_1)
-    #p201_2.add_duration(duration_201_2)
-    #p229.add_duration(duration_229)
+   
     #str2date, add date column
-
     # add epoch to the dataframe, add label to the dataframe, produce epoch2label dict
     p222_1.add_daily(daily_222)
     p222_2.add_daily(daily_222)
@@ -102,11 +89,11 @@ def build_patients():
     
     #f_s = h5py.File('../data/features_sti.mat', 'r')
     #pat_list = [p229]
-    pat_list = [p231, p222_1, p222_2, p222_3, p201_2, p229]
+    pat_list = [p231, p222_1, p222_2, p229]
     for pat in pat_list:    
         f = h5py.File('../data/features_' + pat.pat_id + '.mat', 'r')
         pat.add_features(f)
-    return p229
+    return p231, p222_1, p222_2, p229
 
 
 def remove_outliers(dat, thres = 5000):

@@ -22,9 +22,10 @@ class Hyperparams:
 
 
     #produce column name including filename, powerband for four channels and interictal discharges
-    powerbands = ['delta', 'theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all'][::-1]
+    powerbands1 = ['theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all']
+    powerbands = ['delta', 'theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all']
     channel = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4']    
-    col_names = ['filename', col_rs, 'long_epi', 'sleep']
+    col_names = ['filename', col_rs, 'sleep']
     for powerband in powerbands:
         for i in range(1,5):
             col_names.append(powerband+str(i))

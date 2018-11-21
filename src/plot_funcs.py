@@ -205,11 +205,12 @@ def feature_importance(pat, classifier_int, if_save = 0):
     classifier_type2 = [6,7]
     topk = 3 #print topk important features
     if classifier_int in classifier_type1:
-        coef = np.abs(clf.coef_.reshape(7,4))
+        coef = np.abs(clf.coef_.reshape(6,4))
     elif classifier_int in classifier_type2:
-        coef = np.abs(clf.feature_importances_.reshape(7,4))
+        coef = np.abs(clf.feature_importances_.reshape(6,4))
 
-    df = pd.DataFrame(coef, index = hp.powerbands, columns = hp.channel)
+    df = pd.DataFrame(coef, index = hp.powerbands1, columns = hp.channel)
+    print(coef)
     import seaborn as sns
     fig = plt.figure()
     fig, ax = plt.subplots(1,1, figsize=(10,10))
@@ -222,7 +223,7 @@ def feature_importance(pat, classifier_int, if_save = 0):
     inds = np.argpartition(coef.ravel(), -topk)[-topk:]
     feature_names = []
     for ind in inds:
-        feature_name = ', ' + hp.powerbands[::-1][ind // 4] + ' ' + hp.channel[ind % 4] + ' '
+        feature_name = ', ' + hp.powerbands[ind // 4] + ' ' + hp.channel[ind % 4] + ' '
         feature_names.append(feature_name)
     print('The 3 most important features for ' + str(clf_name) + ' are' + feature_names[0] + feature_names[1] + feature_names[2])
 
