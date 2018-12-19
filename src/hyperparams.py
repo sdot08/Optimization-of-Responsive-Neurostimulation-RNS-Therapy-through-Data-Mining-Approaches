@@ -25,7 +25,7 @@ class Hyperparams:
     powerbands1 = ['theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all']
     powerbands = ['delta', 'theta', 'alpha', 'beta', 'lowgamma', 'highgamma', 'all']
     channel = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4']    
-    col_names = ['filename', col_rs, 'sleep']
+    col_names = ['filename', col_rs, 'long_epi', 'sleep']
     for powerband in powerbands:
         for i in range(1,5):
             col_names.append(powerband+str(i))
@@ -33,7 +33,7 @@ class Hyperparams:
     col_names.append('i34')   
 
     # outlier drop list
-    drop_list = ['filename','label', 'region_start_time', 'id', 'epoch', 'if_stimulated', 'i12', 'i34']
+    drop_list = ['filename','label', 'region_start_time', 'id', 'epoch', 'if_stimulated', 'i12', 'i34',]
 
 
     label_fontsize = 22

@@ -1,18 +1,20 @@
 %output a table contain the feature of whether 
-function T_S = get_longepi(data)
+function T_S = get_longepi(data, if_le)
 warning('off','all')
 [filter_longepi, ph, ph] = dummy2bool(data, 'ECoGtrigger', 'Filename', 'Long_Episode');
 files = data.Filename;
 
 dummies = zeros(height(data),1, 'double');
-for i = 1:length(files)
-    file = files(i);
-    if ismember(file,filter_longepi)
-        dummy = 1;
-    else
-        dummy = 0;
+if if_le > 0
+    for i = 1:length(files)
+        file = files(i);
+        if ismember(file,filter_longepi)
+            dummy = 1;
+        else
+            dummy = 0;
+        end
+        dummies(i) = dummy;
     end
-    dummies(i) = dummy;
 end
 T_S = table(data.Filename, data.Timestamp_int, dummies);
 

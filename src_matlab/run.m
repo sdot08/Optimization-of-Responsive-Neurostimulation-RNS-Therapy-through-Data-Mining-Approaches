@@ -1,10 +1,11 @@
 %%import data from the file NYU_ECoG_Catalog.csv to table Catalog
 import_data;
-pat_id_list = {229};
-if_le = 1;
+pat_id_list = {222};
+if_le_list = {0,0,1};
 
 for i = 1:length(pat_id_list)
-    id = pat_id_list{i};    
+    id = pat_id_list{i};   
+    if_le = if_le_list{i};
     prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
     % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
@@ -14,7 +15,7 @@ for i = 1:length(pat_id_list)
     %[stimulated, scheduled] = filter_scheduled(Catalog, id, prepath);
     [sche_dates, sti_dates, all_dates] = dummy2bool(Catalog, 'ECoGtrigger', 'Timestamp_int', 'Scheduled');
     T_S = get_sleep(Catalog);
-    T_l = get_longepi(Catalog);
+    T_l = get_longepi(Catalog, if_le);
     
     features_1 = join(T_l, join(T_S, join(T_power, T_numi,'Keys','Var1'), 'Keys','Var1'), 'Keys','Var1');
     features_2 = table2array(features_1(:,[1,2,3,5,7,9]));
@@ -22,7 +23,7 @@ for i = 1:length(pat_id_list)
     features = conv_dat2int(features_2, features_3);
     dates_filter = [sche_dates, t_le.'];
     T_arr_scheduled = features(ismember(features(:,2), dates_filter),:);
-    save(strcat('/Users/hp/GitHub/EEG/data/features_', num2str(id)), 'T_arr_scheduled', '-v7.3');
+    save(strcat('/Users/hp/GitHub/EEG/data/features_old', num2str(id)), 'T_arr_scheduled', '-v7.3');
 end
 
 
