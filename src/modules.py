@@ -152,6 +152,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     X = dat.drop(drop_list, axis = 1, inplace = False)
     
     y=y.astype('int')
+    print(X.iloc[0])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
     scaler = preprocessing.StandardScaler().fit(X_train)
     if if_scaler:
