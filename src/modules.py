@@ -107,11 +107,17 @@ def build_patients(index = -1, freq_idx = 0):
 def remove_outliers(dat, thres = 5000):
     num_dat = dat.shape[0]
 
-    drop_list = hp.drop_list  #the drop list is only for removing outliers
 
     output = dat.copy()
+    # outlier drop list
+    drop_list = ['filename','label', 'region_start_time', 'id', 'epoch', 'if_stimulated', 'i12', 'i34',]
+    if 'sleep' in dat.columns:
+        drop_list.append('sleep')
+    if 'long_epi' in dat.columns:
+        drop_list.append('long_epi')
+        
     for col in dat.drop(drop_list, axis = 1).columns.values:
-        bol = dat.loc[:, col] - np.mean(dat.loc[:, col]) <= hp.param_outliers * dat.loc[:, col].std()
+        bol = dat.loc[:, col] - np.mean(dat.loc[:, col]) < hp.param_outliers * dat.loc[:, col].std()
         output = output.loc[bol,:]
     num_output = output.shape[0]
     print('Total outliers removed: {}'.format(num_dat - num_output))

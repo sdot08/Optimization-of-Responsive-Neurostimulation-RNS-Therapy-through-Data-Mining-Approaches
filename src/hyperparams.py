@@ -32,8 +32,7 @@ class Hyperparams:
     col_names.append('i12')
     col_names.append('i34')   
 
-    # outlier drop list
-    drop_list = ['filename','label', 'region_start_time', 'id', 'epoch', 'if_stimulated', 'i12', 'i34',]
+
 
 
     label_fontsize = 22
