@@ -1,0 +1,37 @@
+[1mdiff --git a/src_matlab/stitchall.m b/src_matlab/stitchall.m[m
+[1mindex 7326978..5fe9284 100644[m
+[1m--- a/src_matlab/stitchall.m[m
+[1m+++ b/src_matlab/stitchall.m[m
+[36m@@ -1,19 +1,31 @@[m
+%output a table with each filename corresponds to the power of each band in [m
+% each channel(28 features)[m
+function [31mT[m[32m[T,file_le, t_le][m = stitchall(data, id, [31mprepath)[m[32mprepath, if_le)[m
+%data = Catalog_222;[m
+files = data.Filename;[m
+
+channelPowers = zeros(height(data),28, 'double');[m
+[32m[idxs, file_le, t_le] = stim_firstns(data, prepath);[m
+
+
+for i = 1:length(files)[m
+    filename = files(i);[m
+    path = strcat(prepath, filename);[m
+    %check if the file exists[m
+    %path = '/Users/hp/GitHub/EEG/datdata/130901185189430000.dat';[m
+
+    if exist(path, 'file') == 2[m
+        [32mdata_eeg = readPersystDat(path);[m
+        %get channel power for that particular file[m
+        [32mif if_le[m
+[32m            if ismember(filename, file_le)[m
+[32m                idxx = find(file_le == filename);[m
+[32m                idx = idxs(idxx);[m
+[32m                disp(idx)[m
+                data_eeg = [31mstitch(path,[m[32mgetfirstns(data_eeg, idx, 0);[m
+[32m            end[m
+[32m        end[m
+[32m        data_eeg2 = stitch(data_eeg,[m 0, id);
+        channelPower = [31mget_power_load(data_eeg);[m[32mget_power_load(data_eeg2, if_le);[m
+        channelPowers(i,:) = channelPower;[m
+    else[m
+        disp(filename)[m

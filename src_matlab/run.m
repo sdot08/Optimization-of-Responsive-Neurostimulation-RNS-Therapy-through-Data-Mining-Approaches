@@ -6,11 +6,13 @@ if_le_list = {0,0,1};
 for i = 1:length(pat_id_list)
     id = pat_id_list{i};   
     if_le = if_le_list{i};
+    id = 231
+    if_le = 0
     prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
     % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
     Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
-    [T_power,file_le, t_le] = stitchall(Catalog,id, prepath, 1);
+    [T_power,file_le, t_le] = stitchall(Catalog,id, prepath, if_le);
     T_numi = get_numi(Catalog,id, prepath);
     %[stimulated, scheduled] = filter_scheduled(Catalog, id, prepath);
     [sche_dates, sti_dates, all_dates] = dummy2bool(Catalog, 'ECoGtrigger', 'Timestamp_int', 'Scheduled');
@@ -21,9 +23,12 @@ for i = 1:length(pat_id_list)
     features_2 = table2array(features_1(:,[1,2,3,5,7,9]));
     features_3 = table2array(features_1(:,[2,3,5,7,9]));
     features = conv_dat2int(features_2, features_3);
-    dates_filter = [sche_dates, t_le.'];
+    if if_le
+        dates_filter = [sche_dates, t_le.'];
+    else
+        dates_filter = sche_dates;
     T_arr_scheduled = features(ismember(features(:,2), dates_filter),:);
-    save(strcat('/Users/hp/GitHub/EEG/data/features_old', num2str(id)), 'T_arr_scheduled', '-v7.3');
+    save(strcat('/Users/hp/GitHub/EEG/data/features_124', num2str(id)), 'T_arr_scheduled', '-v7.3');
 end
 
 
@@ -35,13 +40,11 @@ pat_id_list = {229,222,231};
 for i = 1:length(pat_id_list)
     id = pat_id_list{i}; 
     disp(id)
+    id = 231;
     prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
     % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
-    Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
-    
-    stim_firstns(Catalog, prepath)
-    
+    Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);    
     
     T_power = stitchall(Catalog,id, prepath, 0);
     T_numi = get_numi(Catalog,id, prepath);
@@ -54,7 +57,7 @@ for i = 1:length(pat_id_list)
     features_3 = table2array(features_1(:,[2,3,5,7]));
     features = conv_dat2int(features_2, features_3);
     T_arr_scheduled = features(ismember(features(:,2), sche_dates),:);
-    save(strcat('/Users/hp/GitHub/EEG/data/features_', num2str(id)), 'T_arr_scheduled', '-v7.3');
+    save(strcat('/Users/hp/GitHub/EEG/data/features_149', num2str(id)), 'T_arr_scheduled', '-v7.3');
 end
 
 

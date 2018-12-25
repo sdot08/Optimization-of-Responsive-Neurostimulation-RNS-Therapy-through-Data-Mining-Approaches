@@ -12,7 +12,7 @@ import prep
 import plot_funcs 
 
 
-def build_patients(index = -1, old = 0):
+def build_patients(index = -1, freq_idx = 0):
     col_rs = hp.col_rs
     col_es = hp.col_es
     col_le = hp.col_le
@@ -94,8 +94,8 @@ def build_patients(index = -1, old = 0):
     elif index == 2221:
         pat_list = [p222_1]
     for pat in pat_list:  
-        if old:  
-            f = h5py.File('../data/features_old' + pat.pat_id + '.mat', 'r')
+        if freq_idx == 124:  
+            f = h5py.File('../data/features_124' + pat.pat_id + '.mat', 'r')
         else:
             f = h5py.File('../data/features_' + pat.pat_id + '.mat', 'r')
         pat.add_features(f)
