@@ -96,6 +96,8 @@ def build_patients(index = -1, freq_idx = 0):
     for pat in pat_list:  
         if freq_idx == 124:  
             f = h5py.File('../data/features_124' + pat.pat_id + '.mat', 'r')
+        elif freq_idx == 90:
+            f = h5py.File('../data/features_90' + pat.pat_id + '.mat', 'r')
         else:
             f = h5py.File('../data/features_' + pat.pat_id + '.mat', 'r')
         pat.add_features(f)
@@ -135,7 +137,8 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     elif le_class == 1:
         dat_0 = dat_0.loc[dat_0.loc[:,'long_epi'] == 1,:]
     # remove outliers
-    dat = remove_outliers(dat_0)
+    dat = dat_0
+    #dat = remove_outliers(dat_0)
     y = dat.loc[:,'label']
     drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id',]
     if if_remove_delta:
@@ -150,9 +153,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
         if 'long_epi' in dat.columns:
             drop_list.append('long_epi')
     X = dat.drop(drop_list, axis = 1, inplace = False)
-    
     y=y.astype('int')
-    print(X.iloc[0])
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
     scaler = preprocessing.StandardScaler().fit(X_train)
     if if_scaler:

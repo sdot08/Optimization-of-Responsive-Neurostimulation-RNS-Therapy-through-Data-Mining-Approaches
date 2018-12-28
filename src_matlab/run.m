@@ -28,7 +28,7 @@ for i = 1:length(pat_id_list)
     else
         dates_filter = sche_dates;
     T_arr_scheduled = features(ismember(features(:,2), dates_filter),:);
-    save(strcat('/Users/hp/GitHub/EEG/data/features_124', num2str(id)), 'T_arr_scheduled', '-v7.3');
+    save(strcat('/Users/hp/GitHub/EEG/data/features_90', num2str(id)), 'T_arr_scheduled', '-v7.3');
 end
 
 
