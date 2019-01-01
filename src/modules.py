@@ -10,7 +10,7 @@ from hyperparams import Hyperparams as hp
 from patient import patient
 import prep
 import plot_funcs 
-
+import sys
 
 def build_patients(index = -1, freq_idx = 0):
     col_rs = hp.col_rs
@@ -72,18 +72,22 @@ def build_patients(index = -1, freq_idx = 0):
     duration_229_1 = pd.read_csv(prepath + '229_duration.csv', skiprows=3)
 
 
-    daily_222 = prep.prep_daily(pd.read_csv(prepath + 'NY222_2015-08-11_to_2018-06-12_daily_20180613153105.csv', skiprows=3))
-    daily_231 = prep.prep_daily(pd.read_csv(prepath + 'NY231_2016-07-05_to_2018-06-12_daily_20180613153815.csv', skiprows=3))
-    daily_229 = prep.prep_daily(pd.read_csv(prepath + 'NY229_2017-05-12_to_2018-09-07_daily_20180907183334.csv', skiprows=3))
+    daily={}
+    daily['222'] = prep.prep_daily(pd.read_csv(prepath + 'NY222_2015-08-11_to_2018-06-12_daily_20180613153105.csv', skiprows=3))
+    daily['231'] = prep.prep_daily(pd.read_csv(prepath + 'NY231_2016-07-05_to_2018-06-12_daily_20180613153815.csv', skiprows=3))
+    daily['229'] = prep.prep_daily(pd.read_csv(prepath + 'NY229_2017-05-12_to_2018-09-07_daily_20180907183334.csv', skiprows=3))
+    daily['241'] = prep.prep_daily(pd.read_csv(prepath + 'NY241_2017-06-13_to_2018-10-05_daily_20181005204526.csv', skiprows=3))
+    daily['226'] = prep.prep_daily(pd.read_csv(prepath + 'NY226_2016-02-09_to_2018-10-05_daily_20181005204146.csv', skiprows=3))
 
    
     #str2date, add date column
     # add epoch to the dataframe, add label to the dataframe, produce epoch2label dict
-    p222_1.add_daily(daily_222)
-    p222_2.add_daily(daily_222)
-    p222_3.add_daily(daily_222)
-    p231.add_daily(daily_231)
-    p229.add_daily(daily_229)
+    # p222_1.add_daily(daily_222)
+    # p222_2.add_daily(daily_222)
+    # p222_3.add_daily(daily_222)
+    # p231.add_daily(daily_231)
+    # p229.add_daily(daily_229)
+    # p241.add_daily(daily_241)
 
     
     #all patients
@@ -99,8 +103,10 @@ def build_patients(index = -1, freq_idx = 0):
         elif freq_idx == 90:
             f = h5py.File('../data/features_90' + pat.pat_id + '.mat', 'r')
         else:
-            f = h5py.File('../data/features_' + pat.pat_id + '.mat', 'r')
+            sys.exit(1)
+        pat.add_daily(daily[pat.pat_id])
         pat.add_features(f)
+        
     if len(pat_list) == 1:
         return pat_list[0]
     return tuple(pat_list)
