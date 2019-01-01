@@ -7,8 +7,8 @@ for i = 1:length(pat_id_list)
     id = pat_id_list{i};   
     if_le = if_le_list{i};
     import_data;
-    id = 229
-    if_le = 1
+    id = 22
+    if_le = 0
     prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
     % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
@@ -30,7 +30,7 @@ for i = 1:length(pat_id_list)
         dates_filter = sche_dates;
     end
     T_arr_scheduled = features(ismember(features(:,2), dates_filter),:);
-    save(strcat('/Users/hp/GitHub/EEG/data/features_90', num2str(id)), 'T_arr_scheduled', '-v7.3');
+    save(strcat('/Users/hp/GitHub/EEG/data/features_124', num2str(id)), 'T_arr_scheduled', '-v7.3');
 
 
 

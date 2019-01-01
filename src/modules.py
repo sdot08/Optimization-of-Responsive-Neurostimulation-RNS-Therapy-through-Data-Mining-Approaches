@@ -126,7 +126,7 @@ def remove_outliers(dat, thres = 5000):
 
     return output
 
-def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1):
+def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0):
     dat_0 = pat.features
     if sleep_class == 0:
         dat_0 = dat_0.loc[dat_0.loc[:,'sleep'] == 0,:]
@@ -137,8 +137,10 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     elif le_class == 1:
         dat_0 = dat_0.loc[dat_0.loc[:,'long_epi'] == 1,:]
     # remove outliers
-    dat = dat_0
-    #dat = remove_outliers(dat_0)
+    if remove_outliers:
+        dat = remove_outliers(dat_0)
+    else:
+        dat = dat_0
     y = dat.loc[:,'label']
     drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id',]
     if if_remove_delta:

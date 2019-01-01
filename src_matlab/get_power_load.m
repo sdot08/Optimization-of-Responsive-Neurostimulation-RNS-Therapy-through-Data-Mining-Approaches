@@ -5,7 +5,7 @@ function channel_power = get_power_load(data, if_le)
 
 
 %define ECoG power bands of interest
-high_cut = 90;
+high_cut = 124.9;
 Power_band{1} = [0.5 4];        %delta
 Power_band{2} = [4 8];       %theta
 Power_band{3} = [8 12];      %alpha
