@@ -111,9 +111,10 @@ def dat_agg(dat):
     dat_epi_agg = dat.loc[:, [col_es, 'epoch']].groupby('epoch').agg('mean')
     dat_epi_agg, base_epi = firstnorm(dat_epi_agg, col_es)
     dat_le_agg = dat.loc[:, [col_le, 'epoch']].groupby('epoch').agg('mean')
-    dat_le_agg, base_le = firstnorm(dat_le_agg, col_le)
+    # dat_le_agg, base_le = firstnorm(dat_le_agg, col_le)
     dat_epi_agg_ste = dat.loc[:, [col_es, 'epoch']].groupby('epoch').std()/base_epi/np.sqrt(N)
-    dat_le_agg_ste = dat.loc[:, [col_le, 'epoch']].groupby('epoch').std()/base_le/np.sqrt(N)
+    #dat_le_agg_ste = dat.loc[:, [col_le, 'epoch']].groupby('epoch').std()/base_le/np.sqrt(N)
+    dat_le_agg_ste = dat.loc[:, [col_le, 'epoch']].groupby('epoch').std()/np.sqrt(N)
     
     return dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste
 

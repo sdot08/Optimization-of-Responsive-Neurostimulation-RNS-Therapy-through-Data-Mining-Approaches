@@ -56,12 +56,14 @@ def build_patients(index = -1, freq_idx = 0):
     end_229 = datetime.strptime('Aug 23 2018', '%b %d %Y')
     num_per_epoch_229 = 31
 
-    start_241 = datetime.strptime('Dec 14 2017', '%b %d %Y')
+    start_241 = datetime.strptime('Nov 14 2017', '%b %d %Y')
     end_241 = datetime.strptime('Oct 4 2018', '%b %d %Y')
     num_per_epoch_241 = 29
 
     start_226 = datetime.strptime('Apr 26 2017', '%b %d %Y')
     end_226 = datetime.strptime('Nov 12 2017', '%b %d %Y')
+    #end_226 = datetime.strptime('Oct 28 2018', '%b %d %Y')
+
     num_per_epoch_226 = 33
 
     p231.add_epochinfo(start_231, end_231, num_per_epoch_231)
@@ -93,13 +95,15 @@ def build_patients(index = -1, freq_idx = 0):
     
     #all patients
     if index == -1:
-        pat_list = [p231, p222_1, p222_2, p229, p241, p226]
+        pat_list = [p231, p222_1, p222_2, p229]
     elif index == 231:
         pat_list = [p231]
     elif index == 2221:
         pat_list = [p222_1]
     elif index == 241:
         pat_list = [p241]
+    elif index == 2223:
+        pat_list = [p222_3]
     elif index == -2:
         pat_list = [p241, p226]
     for pat in pat_list:  
@@ -111,7 +115,9 @@ def build_patients(index = -1, freq_idx = 0):
             sys.exit(1)
         pat.add_daily(daily[pat.pat_id])
         pat.add_features(f)
-        
+        pat.ngood = pat.features.loc[pat.features['label'] == True].shape[0]
+        pat.nbad = pat.features.loc[pat.features['label'] == False].shape[0]
+        pat.ndata = pat.features.shape[0]
     if len(pat_list) == 1:
         return pat_list[0]
     return tuple(pat_list)

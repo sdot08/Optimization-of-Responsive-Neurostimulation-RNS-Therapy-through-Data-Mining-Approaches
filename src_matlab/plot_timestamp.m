@@ -2,7 +2,7 @@ clear all
 import_data;
 % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
-pt_ID = 222;
+pt_ID = 231;
 Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', pt_ID);
 Catalog_Time = Catalog.Timestamp_int;
 Catalog_Time_date = floor(Catalog_Time) - 6030;

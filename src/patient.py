@@ -62,5 +62,10 @@ class patient():
         features.loc[:,'if_stimulated'] = if_stimulated
         return features
 
+    def print_features_property(self):
+        print(self.id)
+        print('good: ', self.ngood)
+        print('bad: ', self.nbad)
+        print('total: ', self.ndata)
 
 

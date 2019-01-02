@@ -20,6 +20,7 @@ import modules
 def plot_epoch_mean(patient_list, if_save = 0):
 
     for patient in patient_list:
+        patient.print_features_property()
         ptid = patient.id
         dat = patient.daily
         dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste = prep.dat_agg(dat)

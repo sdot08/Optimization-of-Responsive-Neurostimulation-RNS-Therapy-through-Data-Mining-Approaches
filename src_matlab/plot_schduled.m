@@ -1,5 +1,8 @@
 %plot_schduled(sti_dates, sche_dates, 231)
-function plot_schduled(stimulated, scheduled, pt_ID)
+
+
+
+function plot_schduled(scheduled, stimulated, pt_ID)
 stimulated_date = floor(stimulated);
 stimulated_4d = stimulated - stimulated_date;
 scheduled_date = floor(scheduled);
@@ -27,6 +30,13 @@ case 201
 case 229
     sched = [(9+5/6)/24, (10+5/6)/24, (22+5/6)/24];
     sched_names = {'09:50', '10:50', '22:50'};
+case 226
+    sched = [(20+5/6)/24, (21+4/6)/24, (22+4/6)/24];
+    sched_names = {'20:50','21:40', '22:40'};
+case 241
+        sched = [(10+4/6)/24, (22+4/6)/24];
+        sched_names = {'10:40', '22:40'};
+    
 end
 sched = [0,sched,1];
 sched_names = ['00:00',sched_names,'24:00'];
