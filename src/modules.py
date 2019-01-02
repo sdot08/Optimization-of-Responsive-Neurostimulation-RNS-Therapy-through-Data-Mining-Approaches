@@ -27,6 +27,8 @@ def build_patients(index = -1, freq_idx = 0):
     p231 = patient('231')
     # local means whether to use local(weekly) median as threshold
     p229 = patient('229')
+    p241 = patient('241')
+    p226 = patient('226')
 
     #add epoch info
     start_222_1 = datetime.strptime('Feb 12 2016', '%b %d %Y')
@@ -41,6 +43,7 @@ def build_patients(index = -1, freq_idx = 0):
     start_222_3 = datetime.strptime('Sep 19 2017', '%b %d %Y')
     end_222_3 = datetime.strptime('Jan 30 2018', '%b %d %Y')
     num_per_epoch_222_3 = 31
+
     start_222 = [start_222_1, start_222_2, start_222_3]
     end_222 = [end_222_1, end_222_2, end_222_3]
     num_per_epoch_222 = [num_per_epoch_222_1, num_per_epoch_222_2, num_per_epoch_222_3]
@@ -53,13 +56,21 @@ def build_patients(index = -1, freq_idx = 0):
     end_229 = datetime.strptime('Aug 23 2018', '%b %d %Y')
     num_per_epoch_229 = 31
 
+    start_241 = datetime.strptime('Dec 14 2017', '%b %d %Y')
+    end_241 = datetime.strptime('Oct 4 2018', '%b %d %Y')
+    num_per_epoch_241 = 29
+
+    start_226 = datetime.strptime('Apr 26 2017', '%b %d %Y')
+    end_226 = datetime.strptime('Nov 12 2017', '%b %d %Y')
+    num_per_epoch_226 = 33
 
     p231.add_epochinfo(start_231, end_231, num_per_epoch_231)
     p222_1.add_epochinfo(start_222_1, end_222_1, num_per_epoch_222_1)
     p222_2.add_epochinfo(start_222_2, end_222_2, num_per_epoch_222_2)
     p222_3.add_epochinfo(start_222_3, end_222_3, num_per_epoch_222_3)
     p229.add_epochinfo(start_229, end_229, num_per_epoch_229)
-
+    p241.add_epochinfo(start_241, end_241, num_per_epoch_241)
+    p226.add_epochinfo(start_226, end_226, num_per_epoch_226)
 
     #add duration and daily
     prepath = '../data/'
@@ -79,24 +90,18 @@ def build_patients(index = -1, freq_idx = 0):
     daily['241'] = prep.prep_daily(pd.read_csv(prepath + 'NY241_2017-06-13_to_2018-10-05_daily_20181005204526.csv', skiprows=3))
     daily['226'] = prep.prep_daily(pd.read_csv(prepath + 'NY226_2016-02-09_to_2018-10-05_daily_20181005204146.csv', skiprows=3))
 
-   
-    #str2date, add date column
-    # add epoch to the dataframe, add label to the dataframe, produce epoch2label dict
-    # p222_1.add_daily(daily_222)
-    # p222_2.add_daily(daily_222)
-    # p222_3.add_daily(daily_222)
-    # p231.add_daily(daily_231)
-    # p229.add_daily(daily_229)
-    # p241.add_daily(daily_241)
-
     
     #all patients
     if index == -1:
-        pat_list = [p231, p222_1, p222_2, p229]
+        pat_list = [p231, p222_1, p222_2, p229, p241, p226]
     elif index == 231:
         pat_list = [p231]
     elif index == 2221:
         pat_list = [p222_1]
+    elif index == 241:
+        pat_list = [p241]
+    elif index == -2:
+        pat_list = [p241, p226]
     for pat in pat_list:  
         if freq_idx == 124:  
             f = h5py.File('../data/features_124' + pat.pat_id + '.mat', 'r')

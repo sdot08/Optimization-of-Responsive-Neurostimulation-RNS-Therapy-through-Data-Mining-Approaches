@@ -55,6 +55,9 @@ def addepoch(dat, col, start, end, num_per_epoch):
 
 def firstnorm(dat, col):
     base = np.array(dat[col])[0]
+    if base == 0:
+        base = 1
+
     dat.loc[:,col] = dat[col] / base
     return dat, base
 
@@ -75,11 +78,15 @@ def prep_daily2(dat, pat):
 
 def epoch_label(dat):
     #output dataframe with columns labels and labels_epi, dictionary(key: epoch, val: label)
+    pd.set_option('display.max_rows', 1000)
+
+    #print(pd.DataFrame(dat.loc[:, [col_le, 'epoch']]).groupby('epoch').agg('mean'))
     dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste = dat_agg(dat)
     n = dat_epi_agg.shape[0]
 
     # generate label according to episode counts
     thres_epi = np.median(dat_epi_agg)
+
     keys_epi = list(np.array(dat_epi_agg.index, dtype = int))
     vals_epi = list(np.array(dat_epi_agg.loc[:,col_es] < thres_epi))
     epoch_label_epi = dict(zip(keys_epi, vals_epi))

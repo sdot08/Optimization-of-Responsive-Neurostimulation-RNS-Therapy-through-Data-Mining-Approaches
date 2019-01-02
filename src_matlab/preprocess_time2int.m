@@ -8,6 +8,7 @@ b = [[]];
 %set pivotal year
 b_minus = datenum('2000', 'yyyy');
 for i = 1:length(a)
+   
    ai = a(i);
    b(i,1) = datenum(ai, 'mm/dd/yyyy HH:MM:SS') - b_minus;
 end
