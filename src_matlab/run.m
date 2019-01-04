@@ -38,7 +38,7 @@ for i = 1:length(pat_id_list)
     Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
     [sche_dates, sti_dates, all_dates] = dummy2bool(Catalog, 'ECoGtrigger', 'Timestamp_int', 'Scheduled');
     plot_schduled(sche_dates, sti_dates, id)
-end
+    
     
 %for patient 229
 

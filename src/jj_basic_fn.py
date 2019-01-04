@@ -106,8 +106,8 @@ def scores_estimators(X_test, y_test, pat, if_save = 0, label = None):
         
     sorted_auc_dict = sorted(auc_dict.items(), key=operator.itemgetter(1), reverse=True)
     sorted_acc_dict = sorted(acc_dict.items(), key=operator.itemgetter(1), reverse=True)
-    plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), label = label)
-    plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), label = label)
+    plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), pat, label = label)
+    plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), pat,label = label)
 
     #display(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']))
     # display(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']))
