@@ -154,7 +154,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     elif le_class == 1:
         dat_0 = dat_0.loc[dat_0.loc[:,'long_epi'] == 1,:]
     # remove outliers
-    if remove_outliers:
+    if if_remove_outliers:
         dat = remove_outliers(dat_0)
     else:
         dat = dat_0

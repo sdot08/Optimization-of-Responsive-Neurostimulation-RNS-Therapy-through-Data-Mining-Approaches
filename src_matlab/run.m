@@ -2,9 +2,10 @@
 %%maybe change file name, change pat_id_list, if_le_list,
 %%preprocess_time2int input
 import_data;
-pat_id_list = {226};
+pat_id_list = {222};
 if_le_list = {0};
-
+id = 231
+if_le = 0
 for i = 1:length(pat_id_list)
     id = pat_id_list{i};   
     if_le = if_le_list{i};
@@ -32,13 +33,13 @@ for i = 1:length(pat_id_list)
     save(strcat('/Users/hp/GitHub/EEG/data/features_90', num2str(id)), 'T_arr_scheduled', '-v7.3');
 end
 
-pat_id_list = {226, 241};
+pat_id_list = {222,226, 241};
 for i = 1:length(pat_id_list)
     id = pat_id_list{i};   
     Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
     [sche_dates, sti_dates, all_dates] = dummy2bool(Catalog, 'ECoGtrigger', 'Timestamp_int', 'Scheduled');
     plot_schduled(sche_dates, sti_dates, id)
-    
+end
     
 %for patient 229
 
