@@ -86,7 +86,6 @@ def epoch_label(dat):
 
     # generate label according to episode counts
     thres_epi = np.median(dat_epi_agg)
-
     keys_epi = list(np.array(dat_epi_agg.index, dtype = int))
     vals_epi = list(np.array(dat_epi_agg.loc[:,col_es] < thres_epi))
     epoch_label_epi = dict(zip(keys_epi, vals_epi))
@@ -98,6 +97,9 @@ def epoch_label(dat):
     keys = list(np.array(dat_le_agg.index, dtype = int))
     vals = list(np.array(dat_le_agg.loc[:,col_le] < thres))
     epoch_label = dict(zip(keys, vals))
+    # print(thres)
+    # print(dat_le_agg.loc[:,col_le])
+    # print(dat_le_agg.index)
     for key in epoch_label:
         val = epoch_label[key]
         dat.loc[dat['epoch'] == key,'label'] = val

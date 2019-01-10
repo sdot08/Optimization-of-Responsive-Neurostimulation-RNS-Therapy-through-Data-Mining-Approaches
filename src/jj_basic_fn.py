@@ -90,12 +90,13 @@ def save_object(obj, filename):
 
 
 
-def scores_estimators(X_test, y_test, pat, if_save = 0, label = None):
+def scores_estimators(X_test, y_test, pat, if_show=1,if_save = 0, label = None):
     int2name = hp.int2name
     n_estimator = hp.num_classifier
     auc_dict = {}
     acc_dict = {}
     estimators = [1,2,5,6,7]
+    best_auc = 0
     for i in estimators:
         y_score, accuracy,_ , name = load_score(i, X_test, y_test, pat)
         fpr, tpr, _ = roc_curve(y_test, y_score)
@@ -104,10 +105,15 @@ def scores_estimators(X_test, y_test, pat, if_save = 0, label = None):
         auc_dict[name] = roc_auc
         acc_dict[name] = accuracy
         
+        if roc_auc > best_auc:
+            best_auc = roc_auc
+            best_estimator = i
     sorted_auc_dict = sorted(auc_dict.items(), key=operator.itemgetter(1), reverse=True)
     sorted_acc_dict = sorted(acc_dict.items(), key=operator.itemgetter(1), reverse=True)
-    plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), pat, label = label)
-    plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), pat,label = label)
+    pat.best_estimator = best_estimator
+    if if_show:
+        plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), pat, label = label)
+        plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), pat,label = label)
 
     #display(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']))
     # display(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']))

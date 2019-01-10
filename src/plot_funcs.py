@@ -17,8 +17,8 @@ from hyperparams import Hyperparams as hp
 import prep
 import modules
 
-def plot_epoch_mean(patient_list, if_save = 0):
-
+def plot_epoch_mean(patient_list, if_save = 0, label = ''):
+    #sample label : '_weekly'
     for patient in patient_list:
         patient.print_features_property()
         ptid = patient.id
@@ -76,7 +76,7 @@ def plot_epoch_mean(patient_list, if_save = 0):
             plt.ylabel('mean long episode count per day', fontsize=hp.label_fontsize)
             plt.tight_layout()
             if if_save:
-                plt.savefig('../fig/'+ ptid + '/' + 'mean_long_episode_count' + '.png')
+                plt.savefig('../fig/'+ ptid + '/' + label + 'mean_long_episode_count' + '.png')
             plt.show()
 
 

@@ -12,7 +12,7 @@ import prep
 import plot_funcs 
 import sys
 
-def build_patients(index = -1, freq_idx = 0):
+def build_patients(index = -1, freq_idx = 0, if_weekly = 0):
     col_rs = hp.col_rs
     col_es = hp.col_es
     col_le = hp.col_le
@@ -53,7 +53,7 @@ def build_patients(index = -1, freq_idx = 0):
     num_per_epoch_231 = 31
 
     start_229 = datetime.strptime('Oct 9 2017', '%b %d %Y')
-    end_229 = datetime.strptime('Aug 23 2018', '%b %d %Y')
+    end_229 = datetime.strptime('Aug 9 2018', '%b %d %Y')
     num_per_epoch_229 = 31
 
     start_241 = datetime.strptime('Nov 14 2017', '%b %d %Y')
@@ -106,7 +106,12 @@ def build_patients(index = -1, freq_idx = 0):
         pat_list = [p222_3]
     elif index == -2:
         pat_list = [p241, p226]
+    elif index == -3:
+        pat_list = [p231, p222_1, p222_2, p241]
     for pat in pat_list:  
+        # weekly
+        if if_weekly:
+            pat.epoch_info['num_per_epoch'] = 7
         if freq_idx == 124:  
             f = h5py.File('../data/features_124' + pat.pat_id + '.mat', 'r')
         elif freq_idx == 90:
@@ -120,6 +125,8 @@ def build_patients(index = -1, freq_idx = 0):
         pat.ndata = pat.features.shape[0]
     if len(pat_list) == 1:
         return pat_list[0]
+
+
     return tuple(pat_list)
 
 
@@ -173,7 +180,9 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
             drop_list.append('long_epi')
     X = dat.drop(drop_list, axis = 1, inplace = False)
     y=y.astype('int')
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
+    epochs = list(pat.epoch_label_dict.keys())
+    print(epochs)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = epochs, random_state =random_state)
     scaler = preprocessing.StandardScaler().fit(X_train)
     if if_scaler:
         X_train = scaler.transform(X_train)
