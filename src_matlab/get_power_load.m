@@ -1,11 +1,13 @@
 %% Calculate power in specific frequency bands
 %% input path of the file
 %% output the 28 power features corrsponds to the file
-function channel_power = get_power_load(data, if_le)
+function channel_power = get_power_load(data, if_le, high_cut)
 
 
 %define ECoG power bands of interest
-high_cut = 90;
+if high_cut >= 124
+    high_cut = 124.9;
+end
 Power_band{1} = [0.5 4];        %delta
 Power_band{2} = [4 8];       %theta
 Power_band{3} = [8 12];      %alpha

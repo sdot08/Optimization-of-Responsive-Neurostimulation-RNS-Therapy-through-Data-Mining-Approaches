@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.metrics import roc_curve, auc
 import six
 import matplotlib
+import os
 
 import jj_basic_fn as JJ
 import pandas as pd
@@ -16,6 +17,7 @@ import numpy as np
 from hyperparams import Hyperparams as hp
 import prep
 import modules
+
 
 def plot_epoch_mean(patient_list, if_save = 0, label = ''):
     #sample label : '_weekly'
@@ -76,7 +78,10 @@ def plot_epoch_mean(patient_list, if_save = 0, label = ''):
             plt.ylabel('mean long episode count per day', fontsize=hp.label_fontsize)
             plt.tight_layout()
             if if_save:
-                plt.savefig('../fig/'+ ptid + '/' + label + 'mean_long_episode_count' + '.png')
+                directory = '../fig/mean_long_episode_count'
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                plt.savefig(directory + '/' + patient.id + label + 'mean_long_episode_count' + '.png')
             plt.show()
 
 

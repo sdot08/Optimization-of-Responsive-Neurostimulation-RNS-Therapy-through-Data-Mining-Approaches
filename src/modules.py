@@ -12,7 +12,7 @@ import prep
 import plot_funcs 
 import sys
 
-def build_patients(index = -1, freq_idx = 0, if_weekly = 0):
+def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0):
     col_rs = hp.col_rs
     col_es = hp.col_es
     col_le = hp.col_le
@@ -112,6 +112,8 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0):
         # weekly
         if if_weekly:
             pat.epoch_info['num_per_epoch'] = 7
+        if if_2weekly:
+            pat.epoch_info['num_per_epoch'] = 14
         if freq_idx == 124:  
             f = h5py.File('../data/features_124' + pat.pat_id + '.mat', 'r')
         elif freq_idx == 90:
@@ -150,7 +152,7 @@ def remove_outliers(dat, thres = 5000):
 
     return output
 
-def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0):
+def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0, if_split = 0):
     dat_0 = pat.features
     if sleep_class == 0:
         dat_0 = dat_0.loc[dat_0.loc[:,'sleep'] == 0,:]
@@ -164,8 +166,8 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     if if_remove_outliers:
         dat = remove_outliers(dat_0)
     else:
-        dat = dat_0
-    y = dat.loc[:,'label']
+        dat = dat_0.copy()
+
     drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id',]
     if if_remove_delta:
         drop_list += ['delta1',  'delta2',  'delta3', 'delta4']
@@ -178,17 +180,53 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     if if_remove_le:
         if 'long_epi' in dat.columns:
             drop_list.append('long_epi')
-    X = dat.drop(drop_list, axis = 1, inplace = False)
-    y=y.astype('int')
-    epochs = list(pat.epoch_label_dict.keys())
-    print(epochs)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = epochs, random_state =random_state)
-    scaler = preprocessing.StandardScaler().fit(X_train)
-    if if_scaler:
+
+    if if_split == 1:
+        X = dat
+        X_test = X.groupby('epoch', group_keys=False).apply(lambda x: x.sample(frac = 0.2, random_state = random_state))
+        train_idx = [a for a in list(X.index) if a not in list(X_test.index)]
+        X_train = X.loc[train_idx]
+        # print(X_train.shape)
+        # print(X_test.shape)
+        # print(X.shape)
+        y_train = X_train.loc[:,'label'].astype('int')
+        y_test = X_test.loc[:,'label'].astype('int')
+        X_train = np.array(X_train.drop(drop_list, axis = 1, inplace = False))
+        X_test = np.array(X_test.drop(drop_list, axis = 1, inplace = False))
+    elif if_split == -1:
+        y = dat.loc[:,'label']       
+        X = dat
+        y=y.astype('int')
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
+        # X_train = np.array(X_train.drop(drop_list, axis = 1, inplace = False))
+        # X_test = np.array(X_test.drop(drop_list, axis = 1, inplace = False))   
+    # if if_scaler:
+    #     scaler = preprocessing.StandardScaler().fit(X_train) 
+    #     X_train = scaler.transform(X_train)
+    #     X_test = scaler.transform(X_test)    
+    elif if_split == -2:
+        X = dat
+        X_test = X.groupby('epoch', group_keys=False).apply(lambda x: x.sample(frac = 0.2, random_state = random_state))
+        train_idx = [a for a in list(X.index) if a not in list(X_test.index)]
+        X_train = X.loc[train_idx]
+        # print(X_train.shape)
+        # print(X_test.shape)
+        # print(X.shape)
+        y_train = X_train.loc[:,'label'].astype('int')
+        y_test = X_test.loc[:,'label'].astype('int')   
+    else:
+        y = dat.loc[:,'label']       
+        X = dat.drop(drop_list, axis = 1, inplace = False)
+        y=y.astype('int')
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
+        print('not split')
+    if if_scaler and if_split > 0:
+
+        scaler = preprocessing.StandardScaler().fit(X_train) 
         X_train = scaler.transform(X_train)
         X_test = scaler.transform(X_test)    
-    
-        
+
+
     return X_train, X_test, y_train, y_test
 
 

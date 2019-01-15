@@ -2,22 +2,24 @@
 %%maybe change file name, change pat_id_list, if_le_list,
 %%preprocess_time2int input
 import_data;
-pat_id_list = {222};
-if_le_list = {0};
-id = 231
-if_le = 0
-for i = 1:length(pat_id_list)
-    id = pat_id_list{i};   
-    if_le = if_le_list{i};
+% pat_id_list = {222};
+% if_le_list = {0};
+highcut = 90
+% for i = 1:length(pat_id_list)
+% 
+%     id = pat_id_list{i};   
+%     if_le = if_le_list{i};
+    id = 241
+    if_le = 0
     prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
     % convert convert the value in column 'RawLocalTimestamp' from str to
 % integer
     Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
-    [T_power,file_le, t_le] = stitchall(Catalog,id, prepath, if_le);
+    [T_power,file_le, t_le] = stitchall(Catalog,id, prepath, if_le, highcut);
     T_numi = get_numi(Catalog,id, prepath);
     %[stimulated, scheduled] = filter_scheduled(Catalog, id, prepath);
     [sche_dates, sti_dates, all_dates] = dummy2bool(Catalog, 'ECoGtrigger', 'Timestamp_int', 'Scheduled');
-    T_S = get_sleep(Catalog);
+    T_S = get_sleep(Catalog, id);
     T_l = get_longepi(Catalog, if_le);
     
     features_1 = join(T_l, join(T_S, join(T_power, T_numi,'Keys','Var1'), 'Keys','Var1'), 'Keys','Var1');
@@ -30,10 +32,20 @@ for i = 1:length(pat_id_list)
         dates_filter = sche_dates;
     end
     T_arr_scheduled = features(ismember(features(:,2), dates_filter),:);
-    save(strcat('/Users/hp/GitHub/EEG/data/features_90', num2str(id)), 'T_arr_scheduled', '-v7.3');
-end
+    save(strcat('/Users/hp/GitHub/EEG/data/features_', num2str(highcut), num2str(id)), 'T_arr_scheduled', '-v7.3');
+% end
 
-pat_id_list = {222,226, 241};
+
+a = Catalog.Timestamp_int(Catalog.Filename == "131222615481300000.dat");
+B = sche_dates == a;
+features(features(:,1) == 131222615481300000,:)
+T_arr_scheduled(T_arr_scheduled(:,1) == 131222615481300000,:)
+%check histogram of the long episodes
+[idxs, file_le, t_le] = stim_firstns(Catalog, prepath);
+a = idxs/250;
+hist(a)
+%plot bubble plot
+pat_id_list = {226};
 for i = 1:length(pat_id_list)
     id = pat_id_list{i};   
     Catalog = preprocess_time2int(Catalog_raw, 'RawLocalTimestamp', id);
