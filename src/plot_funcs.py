@@ -202,7 +202,7 @@ def get_cmap(n, name='hsv'):
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
     return plt.cm.get_cmap('Spectral', n)
 
-def feature_importance(pat, classifier_int, if_save = 0):
+def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1):
     
     int2name = hp.int2name
     clf_name = int2name[classifier_int]
@@ -211,16 +211,22 @@ def feature_importance(pat, classifier_int, if_save = 0):
     classifier_type2 = [6,7]
     topk = 3 #print topk important features
     if classifier_int in classifier_type1:
-        coef = np.abs(clf.coef_.reshape(6,4))
-    elif classifier_int in classifier_type2:
-        coef = np.abs(clf.feature_importances_.reshape(6,4))
+        
+            coef = clf.coef_.reshape(6,4)
+    elif classifier_int in classifier_type2:        
+            coef = clf.feature_importances_.reshape(6,4)
 
+    if if_abs == 1:
+        coef = np.abs(coef)
+        cmap = plt.cm.Blues
+    else:
+        cmap = plt.cm.Reds
     df = pd.DataFrame(coef, index = hp.powerbands1, columns = hp.channel)
-    print(coef)
+    
     import seaborn as sns
     fig = plt.figure()
     fig, ax = plt.subplots(1,1, figsize=(10,10))
-    r = sns.heatmap(abs(coef), cmap=plt.cm.Blues)
+    r = sns.heatmap(coef, cmap=cmap)
     label = 'patient '+ pat.id
     r.set_title("Feature importance heatmap of {} for {}".format(clf_name, label), fontsize=hp.label_fontsize -2)
     ax.set_yticklabels(df.index, fontsize=hp.label_fontsize-8, verticalalignment = 'center')
@@ -229,10 +235,10 @@ def feature_importance(pat, classifier_int, if_save = 0):
     inds = np.argpartition(coef.ravel(), -topk)[-topk:]
     feature_names = []
     for ind in inds:
-        feature_name = ', ' + hp.powerbands[ind // 4] + ' ' + hp.channel[ind % 4] + ' '
+        feature_name = ', ' + hp.powerbands[ind // 4 + 1] + ' ' + hp.channel[ind % 4] + ' '
         feature_names.append(feature_name)
     print('The 3 most important features for ' + str(clf_name) + ' are' + feature_names[0] + feature_names[1] + feature_names[2])
-
+    print(coef)
 
 
     if if_save:

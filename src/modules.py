@@ -206,7 +206,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
     #     X_test = scaler.transform(X_test)    
     elif if_split == -2:
         X = dat
-        X_test = X.groupby('epoch', group_keys=False).apply(lambda x: x.sample(frac = 0.2, random_state = random_state))
+        X_test = X.groupby('epoch', group_keys=False).apply(lambda x: x.sample(frac = test_size , random_state = random_state))
         train_idx = [a for a in list(X.index) if a not in list(X_test.index)]
         X_train = X.loc[train_idx]
         # print(X_train.shape)
@@ -220,7 +220,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
         y=y.astype('int')
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
         print('not split')
-    if if_scaler and if_split > 0:
+    if if_scaler and if_split >= 0:
 
         scaler = preprocessing.StandardScaler().fit(X_train) 
         X_train = scaler.transform(X_train)
