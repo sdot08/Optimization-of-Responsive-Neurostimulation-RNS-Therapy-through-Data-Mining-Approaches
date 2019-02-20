@@ -21,6 +21,7 @@ class patient():
         self.epoch_info['start'] = start
         self.epoch_info['end'] = end
         self.epoch_info['num_per_epoch'] = num_per_epoch
+        self.epoch_info['num_epochs'] = int((end - start).days / num_per_epoch)
 
     def add_duration(self,dat):
         output = dat.loc[prep.filtertime(dat, hp.col_rs, self.epoch_info['start'], self.epoch_info['end']),:]

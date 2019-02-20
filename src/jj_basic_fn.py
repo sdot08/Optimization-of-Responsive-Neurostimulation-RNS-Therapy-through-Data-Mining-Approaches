@@ -69,15 +69,8 @@ def clf_list(defs):
     return clf
 
 
-  
-def show_result(y_pred, y_test, df, clf_name = '', if_save = 0):
-    heldout_scr = accuracy_score(y_test, y_pred)
-    plot_funcs.show_confusion_matrix(y_test, y_pred, clf_name, if_save)
-    cols_to_keep = ['params', 'mean_test_score']
-    df_toshow = df[cols_to_keep].fillna('-')
-    df_toshow = pd.DataFrame(df_toshow.sort_values(by=["mean_test_score"],  ascending=False))
-    display(pd.DataFrame(df_toshow))
-    return df_toshow
+
+
 
 
 def save_object(obj, filename):
@@ -90,7 +83,7 @@ def save_object(obj, filename):
 
 
 
-def scores_estimators(X_test, y_test, pat, if_show=1,if_save = 0, label = None):
+def scores_estimators(X_test, y_test, pat, if_show=1,if_save = 0, label = None, if_auc = 0):
     int2name = hp.int2name
     n_estimator = hp.num_classifier
     auc_dict = {}
@@ -111,13 +104,15 @@ def scores_estimators(X_test, y_test, pat, if_show=1,if_save = 0, label = None):
     sorted_auc_dict = sorted(auc_dict.items(), key=operator.itemgetter(1), reverse=True)
     sorted_acc_dict = sorted(acc_dict.items(), key=operator.itemgetter(1), reverse=True)
     pat.best_estimator = best_estimator
+    pat.best_auc = best_auc
     if if_show:
         plot_funcs.render_mpl_table(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']), pat, label = label)
         plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), pat,label = label)
 
     #display(pd.DataFrame(sorted_auc_dict, columns = ['Classifier', 'AUC']))
     # display(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']))
-
+    if if_auc:
+        return best_auc
 
 def load_score(classifier_int, X_test, y_test, pat):
     int2name = hp.int2name
@@ -194,28 +189,29 @@ def get_variable_name(namelist):
             output.append(item + str(i))
     return output
 
-def scatter_plot_3d(data, patid,var_list):
+def scatter_plot_3d(pat,var_list, label_list):
     
     from mpl_toolkits.mplot3d import Axes3D
     import matplotlib.pyplot as plt
      
     # Dataset
-
+    data = pat.features
     var1, var2, var3 = var_list[0], var_list[1], var_list[2]
-    keep_list = [var1,var2,var3,'patid', 'label']
-    dfTure = select_data(data,select_dict = {'patid':patid, 'label':True}, keep_list = keep_list) 
-    dfFalse = select_data(data,select_dict = {'patid':patid, 'label':False}, keep_list = keep_list) 
+    keep_list = [var1,var2,var3,'label']
+    dfTure = select_data(data,select_dict = {'label':True}, keep_list = keep_list) 
+    dfFalse = select_data(data,select_dict = {'label':False}, keep_list = keep_list) 
 
     # plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(dfTure[var1], dfTure[var2], dfTure[var3], c='skyblue', s=10)
-    ax.scatter(dfFalse[var1], dfFalse[var2], dfFalse[var3], c='r', s=10)
+    ax.scatter(dfTure[var1], dfTure[var2], dfTure[var3], c='blue', s=10, label = 'ECoGs from Good Epochs')
+    ax.scatter(dfFalse[var1], dfFalse[var2], dfFalse[var3], c='red', s=10, label = 'ECoGs from Bad Epochs')
 
     ax.view_init(30, 185)
-    ax.set_xlabel(var1)
-    ax.set_ylabel(var2)
-    ax.set_zlabel(var3)
+    ax.set_xlabel(label_list[0])
+    ax.set_ylabel(label_list[1])
+    ax.set_zlabel(label_list[2])
+    plt.legend(loc='upper right')
     plt.show()
  
 def add_label_sti(dat):

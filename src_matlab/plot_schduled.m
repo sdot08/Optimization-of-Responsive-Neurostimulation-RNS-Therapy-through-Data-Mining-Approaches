@@ -22,7 +22,7 @@ case 222
 
 case 231
     sched = [4/24, 10/24, 16/24, 22/24];
-    sched_names = {'04:00', '10:00', '16:00', '22:00'};
+    sched_names = {'4:00', '10:00', '16:00', '22:00'};
     
 case 201 
     sched = [(16+5/6)/24, (17+5/6)/24];
@@ -40,12 +40,12 @@ case 241
 end
 sched = [0,sched,1];
 sched_names = ['00:00',sched_names,'24:00'];
-
+%sched_names = ['1','2','3','4','5','6'];
 
 figure('OuterPosition', [80 20 2200 1800]);
-scatter(scheduled_4d, scheduled_date, 'b')
+scatter(scheduled_4d, scheduled_date, [], [0,0.5,1])
 hold on
-scatter(stimulated_4d, stimulated_date, 'r')
+scatter(stimulated_4d, stimulated_date, 'm')
 
 set(gca, 'XTick', sched, 'XTickLabel', sched_names);
 ytks = get(gca, 'YTick');
@@ -53,8 +53,8 @@ set(gca, 'YTickLabel', datestr(ytks), 'FontSize',26, 'FontWeight','bold');
 
 xlabel('Time during day');
 ylabel('Date (DD/MM/YY)');
-legend('Scheduled','Other(Long episode, Magnet, etc. )')
-title(['Patient ID: ' num2str(pt_ID) '    Time vs Date for EEG segments'])
+legend('Other(Long episode, Magnet, etc. )', 'Scheduled')
+%title(['Patient ID: ' num2str(pt_ID) '    Time vs Date for EEG segments'])
 hold off
 fig_name = ['/Users/hp/GitHub/EEG/fig/scheduled/' num2str(pt_ID) '_time_date.png'];
 export_fig(fig_name, '-a1', '-nocrop');

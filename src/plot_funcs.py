@@ -10,6 +10,9 @@ from sklearn.metrics import roc_curve, auc
 import six
 import matplotlib
 import os
+from sklearn.metrics import accuracy_score 
+
+
 
 import jj_basic_fn as JJ
 import pandas as pd
@@ -18,22 +21,137 @@ from hyperparams import Hyperparams as hp
 import prep
 import modules
 
+# input pat, output roc_auc,accuracy for the input classifier, if none, use the best one
+def pat_performance(pat, classifier_int = None):
+    X_train, X_test, y_train, y_test = pat.X_train, pat.X_test, pat.y_train, pat.y_test
+    if classifier_int == None:
+        classifier_int = pat.best_estimator
+    y_score, accuracy, y_pred, clf_name = JJ.load_score(classifier_int, X_test, y_test, pat)
+    fpr, tpr, _ = roc_curve(y_test, y_score)
+    roc_auc = auc(fpr, tpr) 
+    return roc_auc, accuracy
+# plot the performance for all the classifiers of all the pat in pats
+def scatter_performance_all(pats, if_save = 0):
+    classifier_list = [1,2,5,6,7]
+    cmap = get_cmap(len(classifier_list) + 1)
 
-def plot_epoch_mean(patient_list, if_save = 0, label = ''):
+    plt.figure(figsize=(8, 5))
+    fig, ax = plt.subplots(1,1)
+    for i,pat in enumerate(pats):
+
+        for j,classifier_int in enumerate(classifier_list):
+            xs = []
+            ys = []
+            np.random.seed(i+j+12)
+            epsilon = (np.random.random() - 0.5) *0.2
+            xs.append(i + epsilon)
+            roc_auc, accuracy = pat_performance(pat, classifier_int)
+            ys.append(roc_auc)
+    
+            plt.scatter(xs,ys, color = cmap(j),label = hp.int2name[classifier_int],s=70)
+            if i == 0:
+                plt.legend(fontsize=hp.label_fontsize-8)
+    plt.plot(range(len(pats)), [0.7] * len(pats), 'g--')
+    plt.xlabel('Patient', fontsize=hp.label_fontsize-2)
+    plt.ylabel('AUC', fontsize=hp.label_fontsize-2)
+    ax.tick_params(labelsize=hp.label_fontsize-2)
+    ax.set_xticks(range(len(pats)))
+    ax.set_xticklabels([pat.id for pat in pats], fontsize=hp.label_fontsize-2)
+    ax.set_xticklabels([pat.id for pat in pats], fontsize=hp.label_fontsize-2)
+    if if_save:
+        plt.savefig('../fig/scatter_performance_all.png')
+    plt.tight_layout()
+    plt.show()
+
+# plot mean long episode for each epoch along with the accuracy of the prediction for each epoch
+def plot_epoch_mean_acc(pat_list, if_save = 0, label = '', random_states = None, legend_list = None,if_title = 1):
     #sample label : '_weekly'
-    for patient in patient_list:
-        patient.print_features_property()
-        ptid = patient.id
-        dat = patient.daily
+    pat = pat_list[0]
+    pat.print_features_property()
+    ptid = pat.id
+    dat = pat.daily
+    dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste = prep.dat_agg(dat)
+    xlabel = 'Epoch (month)'
+    epoch_label_dict = pat.epoch_label_dict
+    colors = [] #colors for plt.bar
+    good_idx = []
+    bad_idx = []
+    for key, val in epoch_label_dict.items():
+        # colors.append('green' if val else 'red')
+        if val:
+            good_idx.append(key)
+        else:
+            bad_idx.append(key)
+
+    fig, ax = plt.subplots(1,1)
+    ax.set_xticks(range(dat_le_agg.shape[0]))
+    ax.set_xticklabels(range(1,dat_le_agg.shape[0] + 1))
+    ax.tick_params(axis='y')
+    plt.errorbar(np.array(good_idx), np.array(dat_le_agg.iloc[good_idx]),yerr=np.array(dat_le_agg_ste.iloc[good_idx]), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
+    plt.errorbar(np.array(bad_idx), np.array(dat_le_agg.iloc[bad_idx]),yerr=np.array(dat_le_agg_ste.iloc[bad_idx]), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
+    plt.plot(dat_le_agg, label = 'long episode mean', color = 'black', linewidth=3.0)
+    ax.set_ylabel('Mean Long Episode Count Per Day', fontsize=hp.label_fontsize)
+    ax.set_xlabel(xlabel, fontsize=hp.label_fontsize)
+    ax2 = ax.twinx()
+    ax2.tick_params(axis='y2', labelcolor='blue') 
+    cmap = get_cmap(5,name = 'gist_ncar')
+    for i,pat in enumerate(pat_list):
+        num_epochs = int((pat.epoch_info['end'] - pat.epoch_info['start']).days / pat.epoch_info['num_per_epoch'])
+        acc_list = []
+        # X_train, X_test, y_train, y_test = pat.X_train, pat.X_test, pat.y_train, pat.y_test
+        # y_pred = pat.estimator[pat.best_estimator].predict(X_test)
+        # acc = accuracy_score(y_test, y_pred)
+        # print('acc = ', acc)
+        if random_states != None:
+            random_state = random_states[i]
+
+        for epoch in range(num_epochs):
+            X_train, X_test, y_train, y_test = modules.get_ml_data(pat, if_split = -1, epoch = epoch, random_state = random_state)
+            y_pred = pat.estimator[pat.best_estimator].predict(X_test)
+            acc = accuracy_score(y_test, y_pred)
+            acc_list.append(acc)
+        label = None
+        if legend_list != None:
+            label = legend_list[i] + '   AUC = ' + str(JJ.scores_estimators(pat.X_test, pat.y_test, pat, if_show = 0, if_auc = 1))[:5]
+
+        #ax2.scatter(range(num_epochs),acc_list, label = label)
+        ax2.plot(range(num_epochs),acc_list, label = 'Run ' + str(i + 1), color = cmap(i))
+        #print(np.mean(acc_list))
+    ax2.plot(range(num_epochs), [0.5] * num_epochs, 'g--')
+
+    ax2.set_ylabel('Accuracy', fontsize=hp.label_fontsize)
+    if if_title:
+        plt.title('Best model with different split for Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
+    ax2.set_xlabel(xlabel, fontsize=hp.label_fontsize)
+    #plt.ylabel('mean long episode count per day', fontsize=hp.label_fontsize)
+    plt.ylim(0,1.05)
+    plt.legend()
+    plt.tight_layout()
+    if if_save:
+        directory = '../fig/performance variance'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        plt.savefig(directory + '/' + pat.id + ' performance variance ' + '.png')
+    plt.show()
+
+
+
+
+def plot_epoch_mean(pat_list, if_save = 0, label = '', if_title = 1):
+    #sample label : '_weekly'
+    for pat in pat_list:
+        pat.print_features_property()
+        ptid = pat.id
+        dat = pat.daily
         dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste = prep.dat_agg(dat)
         if ptid == '229w':
             if_bar = 1
-            xlabel = 'epoch(week)'
+            xlabel = 'Epoch (week)'
         else:
             if_bar = 0
-            xlabel = 'epoch(month)'
+            xlabel = 'Epoch (month)'
         if if_bar:
-            epoch_label_dict = patient.epoch_label_dict
+            epoch_label_dict = pat.epoch_label_dict
             type(epoch_label_dict)
             colors = [] #colors for plt.bar
             for key, val in epoch_label_dict.items():
@@ -43,12 +161,13 @@ def plot_epoch_mean(patient_list, if_save = 0, label = ''):
             plt.bar(range(dat_le_agg.shape[0]),np.array(dat_le_agg), color = colors)
             plt.xlabel('weeks', fontsize=hp.label_fontsize)
             plt.ylabel('mean long episode count per day', fontsize=hp.label_fontsize)
-            plt.title('Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
+            if if_title:
+                plt.title('Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
             if if_save:
                 plt.savefig('../fig/'+ ptid + '/' + 'mean_long_episode_count' + '.png')
             plt.show()
         else:
-            epoch_label_dict = patient.epoch_label_dict
+            epoch_label_dict = pat.epoch_label_dict
             colors = [] #colors for plt.bar
             good_idx = []
             bad_idx = []
@@ -62,26 +181,22 @@ def plot_epoch_mean(patient_list, if_save = 0, label = ''):
             fig, ax = plt.subplots(1,1)
             ax.set_xticks(range(dat_le_agg.shape[0]))
             ax.set_xticklabels(range(1,dat_le_agg.shape[0] + 1))
-            # plt.plot(dat_epi_agg, label = 'episodes start mean')
-            # plt.plot(dat_epi_agg + dat_epi_agg_ste,linestyle='dashed', label = 'episodes start mean + sem')
-            # plt.plot(dat_epi_agg - dat_epi_agg_ste,linestyle='dashed', label = 'episodes start mean - sem')
-            #plt.errorbar(range(dat_le_agg.iloc[good_idx].shape[0]), np.array(dat_le_agg.iloc[good_idx]),yerr=np.array(dat_le_agg_ste.iloc[good_idx]), fmt='o', mfc='red')
-            plt.errorbar(np.array(good_idx), np.array(dat_le_agg.iloc[good_idx]),yerr=np.array(dat_le_agg_ste.iloc[good_idx]), fmt='o', mfc='blue',ecolor='black')
-            plt.errorbar(np.array(bad_idx), np.array(dat_le_agg.iloc[bad_idx]),yerr=np.array(dat_le_agg_ste.iloc[bad_idx]), fmt='o', mfc='red',ecolor='black')
-            plt.plot(dat_le_agg, label = 'long episode mean', color = 'black')
-            #plt.plot(dat_le_agg, label = 'long episode mean', color = 'black',marker='o', markerfacecolor = 'r')
-            #plt.plot(dat_le_agg + dat_le_agg_ste,linestyle='dashed', label = 'long episode mean + sem', color = 'black')
-            #plt.plot(dat_le_agg - dat_le_agg_ste,linestyle='dashed', label = 'long episode mean - sem', color = 'black')
-            #plt.title('Patient {0}: period {1} - {2}'.format(ptid, period_start, period_end))
-            plt.title('Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
-            plt.xlabel(xlabel, fontsize=hp.label_fontsize)
-            plt.ylabel('mean long episode count per day', fontsize=hp.label_fontsize)
+            
+            plt.errorbar(np.array(good_idx), np.array(dat_le_agg.iloc[good_idx]),yerr=np.array(dat_le_agg_ste.iloc[good_idx]), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
+            plt.errorbar(np.array(bad_idx), np.array(dat_le_agg.iloc[bad_idx]),yerr=np.array(dat_le_agg_ste.iloc[bad_idx]), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
+            plt.plot(dat_le_agg, label = 'Long Episode Mean', color = 'black')
+            if if_title:
+                plt.title('Epoch Label for Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
+            plt.label(xlabel, fontsize=hp.label_fontsize)
+            plt.ylabel('Mean Long Episode Count Per Day', fontsize=hp.label_fontsize)
             plt.tight_layout()
+            plt.legend(fontsize=hp.label_fontsize-2)
             if if_save:
                 directory = '../fig/mean_long_episode_count'
                 if not os.path.exists(directory):
                     os.makedirs(directory)
-                plt.savefig(directory + '/' + patient.id + label + 'mean_long_episode_count' + '.png')
+                plt.savefig(directory + '/' + pat.id + label + 'mean_long_episode_count' + '.png')
+            
             plt.show()
 
 
@@ -147,9 +262,9 @@ def plot_roc(y_score, y_test, n_classes = 2):
     plt.show()
 
 
-def plot_roc_all(X_test, y_test, pat, if_save = 0):
+def plot_roc_all(X_test, y_test, pat, if_save = 0, if_title = 1):
     classifier_list = [1,2,5,6,7]
-    cmap = get_cmap(len(classifier_list))
+    cmap = get_cmap(len(classifier_list) + 1)
     lw = 2
     plt.figure()
     ax = plt.subplot(111)
@@ -166,7 +281,8 @@ def plot_roc_all(X_test, y_test, pat, if_save = 0):
         plt.ylim([0.0, 1.05])
         plt.xlabel('False Positive Rate', fontsize=hp.label_fontsize)
         plt.ylabel('True Positive Rate', fontsize=hp.label_fontsize)
-        plt.title('Patient ' + pat.id + ': ROC for all classifiers', fontsize=hp.label_fontsize)
+        if if_title:
+            plt.title('Patient ' + pat.id + ': ROC for All Classifiers', fontsize=hp.label_fontsize)
     # box = ax.get_position()
     # ax.set_position([box.x0, box.y0 + box.height * 0.0 , box.width, box.height * 1])
     # ax.legend(loc = 'upper center', bbox_to_anchor = (0.5, -0.15), fancybox = True, 
@@ -200,16 +316,15 @@ def correlation_matrix(df):
 def get_cmap(n, name='hsv'):
     '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct 
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
-    return plt.cm.get_cmap('Spectral', n)
+    return plt.cm.get_cmap(name, n)
 
-def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1):
-    
+def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1, if_title = 1):
     int2name = hp.int2name
     clf_name = int2name[classifier_int]
     clf = pat.estimator[classifier_int]
     classifier_type1 = [1]
     classifier_type2 = [6,7]
-    topk = 3 #print topk important features
+    topk = 2 #print topk important features
     if classifier_int in classifier_type1:
         
             coef = clf.coef_.reshape(6,4)
@@ -227,28 +342,44 @@ def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1):
     fig = plt.figure()
     fig, ax = plt.subplots(1,1, figsize=(10,10))
     r = sns.heatmap(coef, cmap=cmap)
-    label = 'patient '+ pat.id
-    r.set_title("Feature importance heatmap of {} for {}".format(clf_name, label), fontsize=hp.label_fontsize -2)
+    label = 'Patient '+ pat.id
+    if if_title:
+        #r.set_title("Feature Importance Heatmap of {} for {}".format(clf_name, label), fontsize=hp.label_fontsize -2)
+        r.set_title("{}".format(clf_name), fontsize=hp.label_fontsize -2)
     ax.set_yticklabels(df.index, fontsize=hp.label_fontsize-8, verticalalignment = 'center')
     ax.set_xticklabels(df.columns, fontsize=hp.label_fontsize-2)
+    if if_save:
+        plt.savefig('../fig/'+ pat.id + '/fi_' + clf_name + '.png')
     plt.show()
-    inds = np.argpartition(coef.ravel(), -topk)[-topk:]
+    inds = np.argsort(coef.ravel())[-topk:]
     feature_names = []
     for ind in inds:
-        feature_name = ', ' + hp.powerbands[ind // 4 + 1] + ' ' + hp.channel[ind % 4] + ' '
+        #feature_name = ', ' + hp.powerbands1[ind // 4] + ' ' + hp.channel[ind % 4] + ' '
+        feature_name = hp.col_names[ind + 8]
         feature_names.append(feature_name)
-    print('The 3 most important features for ' + str(clf_name) + ' are' + feature_names[0] + feature_names[1] + feature_names[2])
+    print_statement = 'The 3 most important features for ' + str(clf_name) + ' are ' 
+    if classifier_int == 1:
+        pat.topfeatures_1 = [feature_names[j] for j in range(topk)]
+        pat.topfeatures_1 = pat.topfeatures_1[::-1]
+    elif classifier_int == 7:
+        pat.topfeatures_7 = [feature_names[j] for j in range(topk)]
+        pat.topfeatures_7 = pat.topfeatures_7[::-1]
+    for i in range(topk):
+        print_statement += feature_names[i] + ', '
+    
+    
+    print(pat.topfeatures_1)
+    print(print_statement)
     print(coef)
 
 
-    if if_save:
-        plt.savefig('../fig/'+ pat.id + '/fi_' + clf_name + '.png')
+
 
 
 def render_mpl_table(data, pat, col_width=3.0, row_height=0.625, font_size=14,
                      header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
                      bbox=[0, 0, 1, 1], header_columns=0,
-                     ax=None, label = None, if_save = 0, **kwargs):
+                     ax=None, label = None, if_title = 1, if_save = 0, **kwargs):
     #plt.figure()
     if ax is None:
         size = (np.array(data.shape[::-1]) + np.array([0, 1])) * np.array([col_width, row_height])
@@ -268,7 +399,8 @@ def render_mpl_table(data, pat, col_width=3.0, row_height=0.625, font_size=14,
         else:
             cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
     if label != None:
-        plt.title(label, fontsize=hp.label_fontsize)
+        if if_title:
+            plt.title(label, fontsize=hp.label_fontsize)
     if if_save:
         plt.savefig('../fig/'+ pat.id + '/' + label + '.png')
     plt.show()
@@ -289,3 +421,6 @@ def get_scatter_plot_data(pat, drop_list = [], if_remove_sleep = 1, if_remove_ic
     X = dat.drop(dlist, axis = 1, inplace = False)
     #X = add_label_sti(X)
     return X
+
+
+

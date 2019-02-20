@@ -11,6 +11,8 @@ from patient import patient
 import prep
 import plot_funcs 
 import sys
+from datetime import datetime
+from datetime import time
 
 def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0):
     col_rs = hp.col_rs
@@ -18,8 +20,7 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0):
     col_le = hp.col_le
 
 
-    from datetime import datetime
-    from datetime import time
+
     #build patient object
     p222_1 = patient('222_1')
     p222_2 = patient('222_2')
@@ -152,8 +153,9 @@ def remove_outliers(dat, thres = 5000):
 
     return output
 
-def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0, if_split = 0):
+def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0, if_split = 0, epoch = None):
     dat_0 = pat.features
+
     if sleep_class == 0:
         dat_0 = dat_0.loc[dat_0.loc[:,'sleep'] == 0,:]
     elif sleep_class == 1:
@@ -182,6 +184,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
             drop_list.append('long_epi')
 
     if if_split == 1:
+        print('epoch split')
         X = dat
         X_test = X.groupby('epoch', group_keys=False).apply(lambda x: x.sample(frac = 0.2, random_state = random_state))
         train_idx = [a for a in list(X.index) if a not in list(X_test.index)]
@@ -198,12 +201,10 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
         X = dat
         y=y.astype('int')
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
-        # X_train = np.array(X_train.drop(drop_list, axis = 1, inplace = False))
-        # X_test = np.array(X_test.drop(drop_list, axis = 1, inplace = False))   
-    # if if_scaler:
-    #     scaler = preprocessing.StandardScaler().fit(X_train) 
-    #     X_train = scaler.transform(X_train)
-    #     X_test = scaler.transform(X_test)    
+        idx = X_test.loc[:, 'epoch'] == epoch
+        X_test = np.array(X_test.loc[idx].drop(drop_list, axis = 1, inplace = False))
+        X_train = np.array(X_train.drop(drop_list, axis = 1, inplace = False))
+        y_test = y_test.loc[idx].astype('int')
     elif if_split == -2:
         X = dat
         X_test = X.groupby('epoch', group_keys=False).apply(lambda x: x.sample(frac = test_size , random_state = random_state))
@@ -220,7 +221,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
         y=y.astype('int')
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
         print('not split')
-    if if_scaler and if_split >= 0:
+    if if_scaler and if_split >= -1:
 
         scaler = preprocessing.StandardScaler().fit(X_train) 
         X_train = scaler.transform(X_train)

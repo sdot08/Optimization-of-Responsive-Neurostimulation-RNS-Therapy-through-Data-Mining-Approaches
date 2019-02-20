@@ -1,6 +1,6 @@
 %output a table with each filename corresponds to the power of each band in 
 % each channel(28 features)
-data = Catalog_222;
+data = Catalog;
 files = data.Filename;
 %initiate channelPowers
 channelPowers = zeros(height(data),28, 'double');

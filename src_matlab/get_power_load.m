@@ -4,6 +4,9 @@
 function channel_power = get_power_load(data, if_le, high_cut)
 
 
+data  = readPersystDat('/Users/hp/GitHub/EEG/datdata/231/130901185189430000.dat');
+
+
 %define ECoG power bands of interest
 if high_cut >= 124
     high_cut = 124.9;
@@ -24,7 +27,7 @@ data_each_channel_beta = zeros(4,1, 'double');
 data_each_channel_lowgamma = zeros(4,1, 'double');
 data_each_channel_highgamma = zeros(4,1, 'double');
 data_each_channel_all = zeros(4,1, 'double');
-channel_power = zeros(28,1, 'double');
+channel_power = zeros(64,1, 'double');
 
 for i = 1:4
     data_each_channel = data(:,i);
@@ -58,6 +61,36 @@ end
     channel_power(21:24) = data_each_channel_highgamma;
     channel_power(25:28) = data_each_channel_all;
 
+%%%%%% Test calculating Mean Phase Coherence
 
+%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% STOP! First find out the lengths of all .dat files from each patient
+% Then truncate all other .dat files to the length of the shortest file
+%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+data = data(1:15513, :);
+fs = 250;
+
+if (size(data,1)/fs)/20 > 2 && 0 % Do not window any more because it's easier for small number of samples to induce spurious synchronization
+    windowleng = 20; % in sec
+    overlap = 20; % in %
+else
+    windowleng = [];
+    overlap = [];
+end
+
+psnyc = zeros(6, length(Power_band)-1);
+
+for ifreq = 1:length(Power_band)-1 % Do not calculate phase synchronization for the "entire band"
+    PLO = nbt_doPhaseLocking_XJedit(data, fs, Power_band{ifreq}, [], [], windowleng, overlap, [1 1]);
+    
+    temp = PLO.PLV';
+    temp = temp(:);
+    temp(isnan(temp)) = [];
+    psnyc(:,ifreq) = temp; % Each row is a pair of channels, from top to bottom, the pairs are:
+                           % Ch1-Ch2, Ch1-Ch3, Ch1-Ch4, Ch2-Ch3, Ch2-Ch4, Ch3-Ch4 
+                           
+end
+%%%%%% Test calculating Mean Phase Coherence
 
 
