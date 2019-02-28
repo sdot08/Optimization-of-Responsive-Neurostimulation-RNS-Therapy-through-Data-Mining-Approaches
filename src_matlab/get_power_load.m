@@ -1,23 +1,23 @@
 %% Calculate power in specific frequency bands
 %% input path of the file
 %% output the 28 power features corrsponds to the file
-function channel_power = get_power_load(data, if_le, high_cut)
+function channel_power = get_power_load(data, if_le, highcut)
 
 
-data  = readPersystDat('/Users/hp/GitHub/EEG/datdata/231/130901185189430000.dat');
+%data  = readPersystDat('/Users/hp/GitHub/EEG/datdata/231/130901185189430000.dat');
 
 
 %define ECoG power bands of interest
-if high_cut >= 124
-    high_cut = 124.9;
+if highcut >= 124
+    highcut = 124.9;
 end
 Power_band{1} = [0.5 4];        %delta
 Power_band{2} = [4 8];       %theta
 Power_band{3} = [8 12];      %alpha
 Power_band{4} = [12 25];     %beta
 Power_band{5} = [25 50];     %low gamma
-Power_band{6} = [50 high_cut];  %high gamma
-Power_band{7} = [0.1 high_cut];   %entire band
+Power_band{6} = [50 highcut];  %high gamma
+Power_band{7} = [0.1 highcut];   %entire band
 
 
 data_each_channel_delta = zeros(4,1, 'double');
@@ -91,6 +91,8 @@ for ifreq = 1:length(Power_band)-1 % Do not calculate phase synchronization for 
                            % Ch1-Ch2, Ch1-Ch3, Ch1-Ch4, Ch2-Ch3, Ch2-Ch4, Ch3-Ch4 
                            
 end
+
+channel_power(29:64) = psnyc;
 %%%%%% Test calculating Mean Phase Coherence
 
 

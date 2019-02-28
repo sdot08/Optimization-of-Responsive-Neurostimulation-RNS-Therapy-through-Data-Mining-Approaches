@@ -22,7 +22,7 @@ highcut = 90
     T_S = get_sleep(Catalog, id);
     T_l = get_longepi(Catalog, if_le);
     
-    features_1 = join(T_l, join(T_S, join(T_power, T_numi,'Keys','Var1'), 'Keys','Var1'), 'Keys','Var1');
+    features_1 = innerjoin(T_l, innerjoin(T_S, innerjoin(T_power, T_numi,'Keys','Var1'), 'Keys','Var1'), 'Keys','Var1');
     features_2 = table2array(features_1(:,[1,2,3,5,7,9]));
     features_3 = table2array(features_1(:,[2,3,5,7,9]));
     features = conv_dat2int(features_2, features_3);
@@ -32,7 +32,7 @@ highcut = 90
         dates_filter = sche_dates;
     end
     T_arr_scheduled = features(ismember(features(:,2), dates_filter),:);
-    save(strcat('/Users/hp/GitHub/EEG/data/features_', num2str(highcut), num2str(id)), 'T_arr_scheduled', '-v7.3');
+    save(strcat('/Users/hp/GitHub/EEG/data/features_sync_', num2str(highcut), num2str(id)), 'T_arr_scheduled', '-v7.3');
 % end
 
 

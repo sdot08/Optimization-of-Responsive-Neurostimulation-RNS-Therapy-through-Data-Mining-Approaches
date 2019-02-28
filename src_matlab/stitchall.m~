@@ -13,14 +13,13 @@ channelPowers = zeros(height(data),64, 'double');
 [idxs, file_le, t_le] = stim_firstns(data, prepath);
 
 ii = 1;
-output_filename = [];
-output_timestamp = [];
 for i = 1:length(files)
     filename = files(i);
     path = strcat(prepath, filename);
     %check if the file exists
     %path = '/Users/hp/GitHub/EEG/datdata/231/130901185189430000.dat';
-
+    output_filename = [];
+    output_timestamp = [];
     if exist(path, 'file') == 2
 
         data_eeg = readPersystDat(path);
@@ -50,7 +49,7 @@ for i = 1:length(files)
         disp(filename)
         disp(i)
     end
-
+    
 end
-T = table(output_filename.', output_timestamp.', channelPowers(1:ii-1,:));
+T = table(output_filename, output_timestamp, channelPowers[:]);
 

@@ -1,0 +1,7 @@
+timestamp2eegplot(catalog, timestamp): plot the eeg wave corresponds to the timestamp
+plot_eeg_f
+
+
+timefilter(time, masks): output 1 or 0 according to if the time is in the range of masks
+
+summary_data(Catalog): output the height and width of the data
