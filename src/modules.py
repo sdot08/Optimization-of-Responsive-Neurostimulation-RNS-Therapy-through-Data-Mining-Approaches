@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 from datetime import time
 
-def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0):
+def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_PSV = 0):
     col_rs = hp.col_rs
     col_es = hp.col_es
     col_le = hp.col_le
@@ -115,14 +115,16 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0):
             pat.epoch_info['num_per_epoch'] = 7
         if if_2weekly:
             pat.epoch_info['num_per_epoch'] = 14
-        if freq_idx == 124:  
+        if if_PSV:
+            f = h5py.File('../data/features_sync_90' + pat.pat_id + '.mat', 'r')
+        elif freq_idx == 124:  
             f = h5py.File('../data/features_124' + pat.pat_id + '.mat', 'r')
         elif freq_idx == 90:
             f = h5py.File('../data/features_90' + pat.pat_id + '.mat', 'r')
         else:
             sys.exit(1)
         pat.add_daily(daily[pat.pat_id])
-        pat.add_features(f)
+        pat.add_features(f, if_PSV = if_PSV)
         pat.ngood = pat.features.loc[pat.features['label'] == True].shape[0]
         pat.nbad = pat.features.loc[pat.features['label'] == False].shape[0]
         pat.ndata = pat.features.shape[0]
@@ -153,7 +155,7 @@ def remove_outliers(dat, thres = 5000):
 
     return output
 
-def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0, if_split = 0, epoch = None):
+def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0, if_split = 0, epoch = None, test = 0):
     dat_0 = pat.features
 
     if sleep_class == 0:
@@ -172,7 +174,9 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
 
     drop_list = ['label', 'region_start_time', 'epoch', 'if_stimulated', 'filename', 'id',]
     if if_remove_delta:
-        drop_list += ['delta1',  'delta2',  'delta3', 'delta4']
+        for x in hp.col_names_P:
+            if (x[:5] == 'Delta' or x[:5] == 'delta') and (x in dat_0.columns):
+                drop_list.append(x)
     if if_remove_icd:
         drop_list.append('i12')
         drop_list.append('i34')
@@ -227,7 +231,8 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_r
         X_train = scaler.transform(X_train)
         X_test = scaler.transform(X_test)    
 
-
+    if test:
+        return X
     return X_train, X_test, y_train, y_test
 
 

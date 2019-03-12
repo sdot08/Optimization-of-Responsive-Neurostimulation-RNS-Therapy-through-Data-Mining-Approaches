@@ -22,7 +22,7 @@ for i = 1:length(files)
     %path = '/Users/hp/GitHub/EEG/datdata/231/130901185189430000.dat';
 
     if exist(path, 'file') == 2
-
+        disp(filename)
         data_eeg = readPersystDat(path);
         %get channel power for that particular file
         if if_le
@@ -35,20 +35,28 @@ for i = 1:length(files)
         
         data_eeg2 = stitch(data_eeg, 0, id);
         [size1,size2] = size(data_eeg2);
-        if size1 >= 15513
+        if size1 >= 18627
+            
             channelPower = get_power_load(data_eeg2, if_le, high_cut);
+            disp(channelPower(1))
             channelPowers(ii,:) = channelPower;
             output_filename = [output_filename, filename];
             output_timestamp = [output_timestamp, data.Timestamp_int(i)];
             ii = ii + 1;
             disp('Power Calculated')
         else
-               disp('EEG too short')
+             disp('EEG too short')
+               
                 
         end
     else
         disp(filename)
         disp(i)
+    if test == 1
+        if i > 100
+            break
+        end
+    end
     end
 
 end

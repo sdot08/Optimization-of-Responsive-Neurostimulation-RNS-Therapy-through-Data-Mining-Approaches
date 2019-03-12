@@ -9,7 +9,7 @@ highcut = 90
 %imestamps2eegplot(Catalog,'2018-05-07 00:00:00', '2018-06-05 00:00:00')
 %     id = pat_id_list{i};   
 %     if_le = if_le_list{i};
-    id = 231
+    id = 241
     if_le = 0
     prepath = strcat('/Users/hp/GitHub/EEG/datdata/',num2str(id), '/');
     % convert convert the value in column 'RawLocalTimestamp' from str to

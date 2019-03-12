@@ -318,27 +318,45 @@ def get_cmap(n, name='hsv'):
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
     return plt.cm.get_cmap(name, n)
 
-def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1, if_title = 1):
+def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1, if_title = 1, if_plv = 0, if_sleep = 0):
     int2name = hp.int2name
     clf_name = int2name[classifier_int]
     clf = pat.estimator[classifier_int]
     classifier_type1 = [1]
     classifier_type2 = [6,7]
     topk = 2 #print topk important features
-    if classifier_int in classifier_type1:
-        
-            coef = clf.coef_.reshape(6,4)
-    elif classifier_int in classifier_type2:        
-            coef = clf.feature_importances_.reshape(6,4)
+    if if_plv:
+        dim1 = 6
+    else:
+        dim1 = 4
 
+    if classifier_int in classifier_type1:
+            print(clf.coef_)
+            if if_sleep:
+                co = clf.coef_[:,1:]
+            else:
+                co = clf.coef_
+            coef = co[0,:24].reshape(6,4)
+            if if_plv:
+                coef_plv = co[0,24:].reshape(dim1,5)
+    elif classifier_int in classifier_type2: 
+            if if_sleep:
+                co = clf.feature_importances_[1:]
+            else:
+                co = clf.feature_importances_       
+            coef = co[:24].reshape(6,4)
+            if if_plv:
+                coef_plv = co[24:].reshape(dim1,5)
     if if_abs == 1:
         coef = np.abs(coef)
         cmap = plt.cm.Blues
     else:
         cmap = plt.cm.Reds
     df = pd.DataFrame(coef, index = hp.powerbands1, columns = hp.channel)
-    
+    if if_plv:
+        df_plv = pd.DataFrame(coef_plv, index = hp.channel_plv, columns = hp.powerbands1[:-1])
     import seaborn as sns
+    
     fig = plt.figure()
     fig, ax = plt.subplots(1,1, figsize=(10,10))
     r = sns.heatmap(coef, cmap=cmap)
@@ -351,6 +369,22 @@ def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1, if_title = 
     if if_save:
         plt.savefig('../fig/'+ pat.id + '/fi_' + clf_name + '.png')
     plt.show()
+
+    if if_plv:
+        fig = plt.figure()
+        fig, ax = plt.subplots(1,1, figsize=(10,10))
+        r = sns.heatmap(coef_plv, cmap=cmap)
+        label = 'Patient '+ pat.id
+        if if_title:
+            #r.set_title("Feature Importance Heatmap of {} for {}".format(clf_name, label), fontsize=hp.label_fontsize -2)
+            r.set_title("{}".format(clf_name), fontsize=hp.label_fontsize -2)
+        ax.set_yticklabels(df_plv.index, fontsize=hp.label_fontsize-8, verticalalignment = 'center')
+        ax.set_xticklabels(df_plv.columns, fontsize=hp.label_fontsize-10)
+        if if_save:
+            plt.savefig('../fig/'+ pat.id + '/fi_' + clf_name + '.png')
+        plt.show()
+
+
     inds = np.argsort(coef.ravel())[-topk:]
     feature_names = []
     for ind in inds:

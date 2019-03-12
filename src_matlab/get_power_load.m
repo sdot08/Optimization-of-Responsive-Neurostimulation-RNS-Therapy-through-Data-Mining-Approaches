@@ -5,8 +5,9 @@ function channel_power = get_power_load(data, if_le, highcut)
 
 
 %data  = readPersystDat('/Users/hp/GitHub/EEG/datdata/231/130901185189430000.dat');
-
-
+%data  = readPersystDat('/Users/hp/GitHub/EEG/datdata/231/131309949654460000.dat');
+% %first obs
+%data  = readPersystDat('/Users/hp/GitHub/EEG/datdata/231/131702162954480000.dat');
 %define ECoG power bands of interest
 if highcut >= 124
     highcut = 124.9;
@@ -68,7 +69,10 @@ end
 % Then truncate all other .dat files to the length of the shortest file
 %!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-data = data(1:15513, :);
+% NY231, min .dat length = 15513 samples
+% NY241, min .dat length = 18627 samples
+% also change the value in stitchall
+data = data(1:18627, :);
 fs = 250;
 
 if (size(data,1)/fs)/20 > 2 && 0 % Do not window any more because it's easier for small number of samples to induce spurious synchronization

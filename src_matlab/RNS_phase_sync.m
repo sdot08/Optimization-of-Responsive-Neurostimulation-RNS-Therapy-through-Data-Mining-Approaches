@@ -112,7 +112,7 @@ end
 
 %% Perform PLV simulation with randomly generated relative-phases
 
-N = 15513; % data total number of samples
+N = 18627; % data total number of samples
 SF_num = 5000; % number of simulations to perform
 
 PLV_sim = nan(1, SF_num);

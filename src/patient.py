@@ -37,11 +37,14 @@ class patient():
         self.epoch_label_epi_dict = epoch_label_epi_dict
         self.daily = data_2
 
-    def add_features(self, f):
+    def add_features(self, f, if_PSV = False):
         #column name including filename, powerband for four channels and interictal discharges
-        col_names = hp.col_names
         pat_id = self.id
         matlab_features_name = 'T_arr_scheduled'
+        if if_PSV:
+            col_names = hp.col_names_P
+        else:
+            col_names = hp.col_names
         a = np.array(f[matlab_features_name]).T
         features_0 = pd.DataFrame(np.array(f[matlab_features_name]).T, columns = col_names)
         # all if_sti is False, for the purpose of convenience, since we are not using them
