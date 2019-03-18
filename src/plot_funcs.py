@@ -318,6 +318,20 @@ def get_cmap(n, name='hsv'):
     RGB color; the keyword argument name must be a standard mpl colormap name.'''
     return plt.cm.get_cmap(name, n)
 
+def fi_plv(co):
+    # 24 + 6 * 6 = 60
+    output = np.zeros(60)
+    for i in range(6):
+        for j in range(4):
+            output[i*10 + j] = co[i*4 + j]
+    # loop through 5 bandwidths
+    for i in range(5):
+        # loop through 6 pairs of channels
+        for j in range(6):
+            output[i * 10 + 4 + j] = co[24 + 5*j + i]
+    output[54:] = 0
+    return output
+
 def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1, if_title = 1, if_plv = 0, if_sleep = 0):
     int2name = hp.int2name
     clf_name = int2name[classifier_int]
@@ -326,85 +340,76 @@ def feature_importance(pat, classifier_int, if_save = 0, if_abs = 1, if_title = 
     classifier_type2 = [6,7]
     topk = 2 #print topk important features
     if if_plv:
-        dim1 = 6
+        dim1 = 10
     else:
         dim1 = 4
 
     if classifier_int in classifier_type1:
             print(clf.coef_)
-            if if_sleep:
-                co = clf.coef_[:,1:]
+            if if_plv:
+                co = fi_plv(clf.coef_[0])
             else:
                 co = clf.coef_
-            coef = co[0,:24].reshape(6,4)
-            if if_plv:
-                coef_plv = co[0,24:].reshape(dim1,5)
+            vmin = None
+            vmax = None
+
     elif classifier_int in classifier_type2: 
-            if if_sleep:
-                co = clf.feature_importances_[1:]
-            else:
-                co = clf.feature_importances_       
-            coef = co[:24].reshape(6,4)
             if if_plv:
-                coef_plv = co[24:].reshape(dim1,5)
+                co = fi_plv(clf.feature_importances_)
+            else:
+                co = clf.feature_importances_
+            vmin = 0
+            vmax = 0.08
+
+    coef = co.reshape(6,dim1)
     if if_abs == 1:
         coef = np.abs(coef)
         cmap = plt.cm.Blues
     else:
         cmap = plt.cm.Reds
-    df = pd.DataFrame(coef, index = hp.powerbands1, columns = hp.channel)
     if if_plv:
-        df_plv = pd.DataFrame(coef_plv, index = hp.channel_plv, columns = hp.powerbands1[:-1])
+        df = pd.DataFrame(coef, index = hp.powerbands1, columns = hp.channel_plv)
+    else:
+        df = pd.DataFrame(coef, index = hp.powerbands1, columns = hp.channel)
+    
     import seaborn as sns
     
     fig = plt.figure()
     fig, ax = plt.subplots(1,1, figsize=(10,10))
-    r = sns.heatmap(coef, cmap=cmap)
+    r = sns.heatmap(coef, cmap=cmap, vmin = vmin, vmax = vmax)
     label = 'Patient '+ pat.id
     if if_title:
         #r.set_title("Feature Importance Heatmap of {} for {}".format(clf_name, label), fontsize=hp.label_fontsize -2)
         r.set_title("{}".format(clf_name), fontsize=hp.label_fontsize -2)
     ax.set_yticklabels(df.index, fontsize=hp.label_fontsize-8, verticalalignment = 'center')
-    ax.set_xticklabels(df.columns, fontsize=hp.label_fontsize-2)
+    ax.set_xticklabels(df.columns, fontsize=hp.label_fontsize-15)
     if if_save:
         plt.savefig('../fig/'+ pat.id + '/fi_' + clf_name + '.png')
     plt.show()
 
-    if if_plv:
-        fig = plt.figure()
-        fig, ax = plt.subplots(1,1, figsize=(10,10))
-        r = sns.heatmap(coef_plv, cmap=cmap)
-        label = 'Patient '+ pat.id
-        if if_title:
-            #r.set_title("Feature Importance Heatmap of {} for {}".format(clf_name, label), fontsize=hp.label_fontsize -2)
-            r.set_title("{}".format(clf_name), fontsize=hp.label_fontsize -2)
-        ax.set_yticklabels(df_plv.index, fontsize=hp.label_fontsize-8, verticalalignment = 'center')
-        ax.set_xticklabels(df_plv.columns, fontsize=hp.label_fontsize-10)
-        if if_save:
-            plt.savefig('../fig/'+ pat.id + '/fi_' + clf_name + '.png')
-        plt.show()
 
 
-    inds = np.argsort(coef.ravel())[-topk:]
-    feature_names = []
-    for ind in inds:
-        #feature_name = ', ' + hp.powerbands1[ind // 4] + ' ' + hp.channel[ind % 4] + ' '
-        feature_name = hp.col_names[ind + 8]
-        feature_names.append(feature_name)
-    print_statement = 'The 3 most important features for ' + str(clf_name) + ' are ' 
-    if classifier_int == 1:
-        pat.topfeatures_1 = [feature_names[j] for j in range(topk)]
-        pat.topfeatures_1 = pat.topfeatures_1[::-1]
-    elif classifier_int == 7:
-        pat.topfeatures_7 = [feature_names[j] for j in range(topk)]
-        pat.topfeatures_7 = pat.topfeatures_7[::-1]
-    for i in range(topk):
-        print_statement += feature_names[i] + ', '
+
+    # inds = np.argsort(coef.ravel())[-topk:]
+    # feature_names = []
+    # for ind in inds:
+    #     #feature_name = ', ' + hp.powerbands1[ind // 4] + ' ' + hp.channel[ind % 4] + ' '
+    #     feature_name = hp.col_names[ind + 8]
+    #     feature_names.append(feature_name)
+    # print_statement = 'The 3 most important features for ' + str(clf_name) + ' are ' 
+    # if classifier_int == 1:
+    #     pat.topfeatures_1 = [feature_names[j] for j in range(topk)]
+    #     pat.topfeatures_1 = pat.topfeatures_1[::-1]
+    # elif classifier_int == 7:
+    #     pat.topfeatures_7 = [feature_names[j] for j in range(topk)]
+    #     pat.topfeatures_7 = pat.topfeatures_7[::-1]
+    # for i in range(topk):
+    #     print_statement += feature_names[i] + ', '
     
     
-    print(pat.topfeatures_1)
-    print(print_statement)
-    print(coef)
+    # print(pat.topfeatures_1)
+    # print(print_statement)
+    # print(coef)
 
 
 

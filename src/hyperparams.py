@@ -22,7 +22,7 @@ class Hyperparams:
     powerbands1 = ['Theta', 'Alpha', 'Beta', 'LowGamma', 'HighGamma', 'Broadband']
     powerbands = ['Delta', 'Theta', 'Alpha', 'Beta', 'LowGamma', 'HighGamma', 'Broadband']
     channel = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4']
-    channel_plv = ['Ch1-Ch2', 'Ch1-Ch3', 'Ch1-Ch4', 'Ch2-Ch3', 'Ch2-Ch4', 'Ch3-Ch4']
+    channel_plv = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4','Ch1-Ch2', 'Ch1-Ch3', 'Ch1-Ch4', 'Ch2-Ch3', 'Ch2-Ch4', 'Ch3-Ch4']
     #if you change this, remember to change the feature_name = hp.col_names[ind + 4] too
     col_names = ['filename', col_rs, 'long_epi', 'sleep']
     for powerband in powerbands:
