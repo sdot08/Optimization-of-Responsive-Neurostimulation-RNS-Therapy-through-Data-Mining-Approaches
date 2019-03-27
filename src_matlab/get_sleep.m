@@ -4,7 +4,7 @@ t = data.Timestamp_int;
 dates = floor(t);
 times = t - dates;
 thres_sleep = [0,8/24];
-if pat == 241
+if pat == 241 || pat == 231
     thres_sleep = [20/24,8/24];
     dummies = zeros(height(data),1, 'double');
     for i = 1:length(times)

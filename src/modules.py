@@ -14,7 +14,9 @@ import sys
 from datetime import datetime
 from datetime import time
 
-def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_PSV = 0):
+np.random.seed(42)
+
+def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_PSV = 0, if_yrandom = 0):
     col_rs = hp.col_rs
     col_es = hp.col_es
     col_le = hp.col_le
@@ -123,7 +125,28 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
             f = h5py.File('../data/features_90' + pat.pat_id + '.mat', 'r')
         else:
             sys.exit(1)
+        
+        # use daily file to identify the label for each epoch or each ECog
         pat.add_daily(daily[pat.pat_id])
+        
+
+        # if use random label
+        if if_yrandom:
+            prev_dict = pat.epoch_label_dict
+            pat.prev_dict = prev_dict
+            n = len(prev_dict)
+            print('prev_dict: ', prev_dict)
+            new_dict = {}
+            tf = np.array([True, False])
+            if pat.id == '241':
+                np.random.seed(40)
+            new_vals = np.random.choice(tf,size = n,)
+            np.random.seed(42)
+            for i,key in enumerate(prev_dict):
+                new_dict[key] = new_vals[i]
+            print('new_dict', new_dict)
+            pat.epoch_label_dict = new_dict
+
         pat.add_features(f, if_PSV = if_PSV)
         pat.ngood = pat.features.loc[pat.features['label'] == True].shape[0]
         pat.nbad = pat.features.loc[pat.features['label'] == False].shape[0]
@@ -155,7 +178,10 @@ def remove_outliers(dat, thres = 5000):
 
     return output
 
-def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42, sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0, if_split = 0, epoch = None, test = 0):
+def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, \
+    if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42,\
+     sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0,\
+      if_split = 0, epoch = None, test = 0):
     dat_0 = pat.features
 
     if sleep_class == 0:

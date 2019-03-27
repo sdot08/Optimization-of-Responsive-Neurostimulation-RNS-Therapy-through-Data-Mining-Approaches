@@ -17,9 +17,11 @@ Machine learning algorithms, including logistic regression, random forest, gradi
 ## Implement
 
 The Matlab code for feature extraction is in the folder src_matlab.
+
 The Python code for data preprocessing, feature extraction, model building, cross-validation, model evaluation,etc. is in the folder src.
 
 Train the model and perform parameter tuning in the Jupyter notebook file ML_part.ipynb.
+
 Evaluate the model and visualize the results in the Jupyter notebook ML results.ipynb
 
 

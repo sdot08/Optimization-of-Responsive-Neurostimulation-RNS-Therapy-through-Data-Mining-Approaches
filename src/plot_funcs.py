@@ -137,7 +137,7 @@ def plot_epoch_mean_acc(pat_list, if_save = 0, label = '', random_states = None,
 
 
 
-def plot_epoch_mean(pat_list, if_save = 0, label = '', if_title = 1):
+def plot_epoch_mean(pat_list, if_save = 0, label = '', if_title = 1, if_yrandom = 0):
     #sample label : '_weekly'
     for pat in pat_list:
         pat.print_features_property()
@@ -167,17 +167,35 @@ def plot_epoch_mean(pat_list, if_save = 0, label = '', if_title = 1):
                 plt.savefig('../fig/'+ ptid + '/' + 'mean_long_episode_count' + '.png')
             plt.show()
         else:
-            epoch_label_dict = pat.epoch_label_dict
-            colors = [] #colors for plt.bar
             good_idx = []
             bad_idx = []
-            for key, val in epoch_label_dict.items():
-                # colors.append('green' if val else 'red')
-                if val:
-                    good_idx.append(key)
-                else:
-                    bad_idx.append(key)
 
+            if not if_yrandom:
+                epoch_label_dict = pat.epoch_label_dict
+                for key, val in epoch_label_dict.items():
+                    # colors.append('green' if val else 'red')
+                    if val:
+                        good_idx.append(key)
+                    else:
+                        bad_idx.append(key)
+            else:
+                epoch_label_dict = pat.prev_dict
+                for key, val in epoch_label_dict.items():
+                    # colors.append('green' if val else 'red')
+                    if val:
+                        good_idx.append(key)
+                    else:
+                        bad_idx.append(key)
+                good_r = []
+                bad_r = []
+                for key, val in pat.epoch_label_dict.items():
+                    # colors.append('green' if val else 'red')
+                    if val:
+                        good_r.append(key)
+                    else:
+                        bad_r.append(key)   
+
+            colors = [] #colors for plt.bar
             fig, ax = plt.subplots(1,1)
             ax.set_xticks(range(dat_le_agg.shape[0]))
             ax.set_xticklabels(range(1,dat_le_agg.shape[0] + 1))
@@ -185,9 +203,14 @@ def plot_epoch_mean(pat_list, if_save = 0, label = '', if_title = 1):
             plt.errorbar(np.array(good_idx), np.array(dat_le_agg.iloc[good_idx]),yerr=np.array(dat_le_agg_ste.iloc[good_idx]), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
             plt.errorbar(np.array(bad_idx), np.array(dat_le_agg.iloc[bad_idx]),yerr=np.array(dat_le_agg_ste.iloc[bad_idx]), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
             plt.plot(dat_le_agg, label = 'Long Episode Mean', color = 'black')
+            if if_yrandom:
+                plt.errorbar(np.array(good_r), np.array([1] * len(good_r)),yerr=np.array([0] * len(good_r)), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
+                plt.errorbar(np.array(bad_r), np.array([1] * len(bad_r)),yerr=np.array([0] * len(bad_r)), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
             if if_title:
                 plt.title('Epoch Label for Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
-            plt.label(xlabel, fontsize=hp.label_fontsize)
+            
+
+            plt.xlabel(xlabel, fontsize=hp.label_fontsize)
             plt.ylabel('Mean Long Episode Count Per Day', fontsize=hp.label_fontsize)
             plt.tight_layout()
             plt.legend(fontsize=hp.label_fontsize-2)

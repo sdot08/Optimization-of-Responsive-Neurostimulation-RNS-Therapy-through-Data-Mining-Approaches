@@ -3,6 +3,7 @@ import numpy as np
 
 import prep 
 from hyperparams import Hyperparams as hp
+np.random.seed(42)
 
 class patient():
     def __init__(self, id):
@@ -15,6 +16,7 @@ class patient():
         self.estimator = {} #best estimator
         self.score = {} #best validation scores
         self.params = {} # params for the estimator
+        self.y_random = y_random
 
     def add_epochinfo(self, start, end, num_per_epoch):
         self.epoch_info = {}

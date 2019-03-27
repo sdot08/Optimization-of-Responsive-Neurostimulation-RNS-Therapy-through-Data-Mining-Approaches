@@ -5,7 +5,6 @@ function [T,file_le, t_le] = stitchall(data, id, prepath, if_le, high_cut)
 % id = 231;
 % if_le = 0;
 % high_cut = 90;
-
 files = data.Filename;
 
 channelPowers = zeros(height(data),64, 'double');
@@ -52,11 +51,7 @@ for i = 1:length(files)
     else
         disp(filename)
         disp(i)
-    if test == 1
-        if i > 100
-            break
-        end
-    end
+
     end
 
 end
