@@ -16,7 +16,7 @@ from datetime import time
 
 np.random.seed(42)
 
-def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_PSV = 0, if_yrandom = 0):
+def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_PSV = 0, if_yrandom = 0, if_sliding_window = 0, sw_size = 31, log = 0, if_shuffle_label = 0, reg = 0):
     col_rs = hp.col_rs
     col_es = hp.col_es
     col_le = hp.col_le
@@ -24,14 +24,13 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
 
 
     #build patient object
-    p222_1 = patient('222_1')
-    p222_2 = patient('222_2')
-    p222_3 = patient('222_3')
-    p231 = patient('231')
+    p222_1 = patient('222_1', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p222_2 = patient('222_2', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p222_3 = patient('222_3', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p231 = patient('231', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
     # local means whether to use local(weekly) median as threshold
-    p229 = patient('229')
-    p241 = patient('241')
-    p226 = patient('226')
+    p229 = patient('229', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p241 = patient('241', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
 
     #add epoch info
     start_222_1 = datetime.strptime('Feb 12 2016', '%b %d %Y')
@@ -55,6 +54,7 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     end_231 = datetime.strptime('Feb 21 2018', '%b %d %Y')
     num_per_epoch_231 = 31
 
+ 
     start_229 = datetime.strptime('Oct 9 2017', '%b %d %Y')
     end_229 = datetime.strptime('Aug 9 2018', '%b %d %Y')
     num_per_epoch_229 = 31
@@ -63,11 +63,7 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     end_241 = datetime.strptime('Oct 4 2018', '%b %d %Y')
     num_per_epoch_241 = 29
 
-    start_226 = datetime.strptime('Apr 26 2017', '%b %d %Y')
-    end_226 = datetime.strptime('Nov 12 2017', '%b %d %Y')
-    #end_226 = datetime.strptime('Oct 28 2018', '%b %d %Y')
 
-    num_per_epoch_226 = 33
 
     p231.add_epochinfo(start_231, end_231, num_per_epoch_231)
     p222_1.add_epochinfo(start_222_1, end_222_1, num_per_epoch_222_1)
@@ -75,7 +71,6 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     p222_3.add_epochinfo(start_222_3, end_222_3, num_per_epoch_222_3)
     p229.add_epochinfo(start_229, end_229, num_per_epoch_229)
     p241.add_epochinfo(start_241, end_241, num_per_epoch_241)
-    p226.add_epochinfo(start_226, end_226, num_per_epoch_226)
 
     #add duration and daily
     prepath = '../data/'
@@ -93,7 +88,6 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     daily['231'] = prep.prep_daily(pd.read_csv(prepath + 'NY231_2016-07-05_to_2018-06-12_daily_20180613153815.csv', skiprows=3))
     daily['229'] = prep.prep_daily(pd.read_csv(prepath + 'NY229_2017-05-12_to_2018-09-07_daily_20180907183334.csv', skiprows=3))
     daily['241'] = prep.prep_daily(pd.read_csv(prepath + 'NY241_2017-06-13_to_2018-10-05_daily_20181005204526.csv', skiprows=3))
-    daily['226'] = prep.prep_daily(pd.read_csv(prepath + 'NY226_2016-02-09_to_2018-10-05_daily_20181005204146.csv', skiprows=3))
 
     
     #all patients
@@ -127,7 +121,7 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
             sys.exit(1)
         
         # use daily file to identify the label for each epoch or each ECog
-        pat.add_daily(daily[pat.pat_id])
+        pat.add_daily(daily[pat.pat_id], log = log, reg = reg)
         
 
         # if use random label
@@ -148,6 +142,10 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
             pat.epoch_label_dict = new_dict
 
         pat.add_features(f, if_PSV = if_PSV)
+        if if_shuffle_label:
+            label_list = list(pat.features.label)
+            np.random.shuffle(label_list)
+            pat.features.label = label_list
         pat.ngood = pat.features.loc[pat.features['label'] == True].shape[0]
         pat.nbad = pat.features.loc[pat.features['label'] == False].shape[0]
         pat.ndata = pat.features.shape[0]
@@ -181,7 +179,7 @@ def remove_outliers(dat, thres = 5000):
 def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, \
     if_remove_icd = 1, if_remove_sleep = 1, if_remove_le = 1, random_state=42,\
      sleep_class = None, le_class = None, if_remove_delta = 1, if_remove_outliers = 0,\
-      if_split = 0, epoch = None, test = 0):
+      if_split = 0, epoch = None, if_reg = 0, test = 0):
     dat_0 = pat.features
 
     if sleep_class == 0:
@@ -203,6 +201,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, \
         for x in hp.col_names_P:
             if (x[:5] == 'Delta' or x[:5] == 'delta') and (x in dat_0.columns):
                 drop_list.append(x)
+
     if if_remove_icd:
         drop_list.append('i12')
         drop_list.append('i34')
@@ -229,6 +228,7 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, \
     elif if_split == -1:
         y = dat.loc[:,'label']       
         X = dat
+        ## change if reg
         y=y.astype('int')
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
         idx = X_test.loc[:, 'epoch'] == epoch
@@ -248,8 +248,11 @@ def get_ml_data(pat, test_size = 0.2, if_stimulated = 'all', if_scaler = 1, \
     else:
         y = dat.loc[:,'label']       
         X = dat.drop(drop_list, axis = 1, inplace = False)
-        y=y.astype('int')
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
+        if not pat.reg:
+            y=y.astype('int')
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify = y, random_state =random_state)
+        else:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state =random_state)
         print('not split')
     if if_scaler and if_split >= -1:
 

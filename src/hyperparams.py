@@ -15,20 +15,28 @@ class Hyperparams:
     if_scaler = 1
     if_remove_icd = 1
 
-    int2name = {1:'Logistic Regression', 2: 'SVM', 3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis', 5:'Decision Tree', 6:'Random Forest', 7:'Gradient Boosting'}
+    int2name = {1:'Logistic Regression', 2: 'SVM', \
+    3: 'Gaussian Naive Bayes classifier', 4:'Linear Discriminant Analysis',\
+     5:'Decision Tree', 6:'Random Forest', 7:'Gradient Boosting',\
+     8: 'Linear Regression'}
 
 
     #produce column name including filename, powerband for four channels and interictal discharges
     powerbands1 = ['Theta', 'Alpha', 'Beta', 'LowGamma', 'HighGamma', 'Broadband']
     powerbands = ['Delta', 'Theta', 'Alpha', 'Beta', 'LowGamma', 'HighGamma', 'Broadband']
+    powerbands_s = ['delta', 'theta', 'alpha', 'beta', 'lowGamma', 'highGamma', 'broadband']
     channel = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4']
     channel_plv = ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4','Ch1-Ch2', 'Ch1-Ch3', 'Ch1-Ch4', 'Ch2-Ch3', 'Ch2-Ch4', 'Ch3-Ch4']
     #if you change this, remember to change the feature_name = hp.col_names[ind + 4] too
     col_names = ['filename', col_rs, 'long_epi', 'sleep']
+    col_names_s = ['filename', col_rs, 'long_epi', 'sleep']
     for powerband in powerbands:
         for i in range(1,5):
             col_names.append(powerband+str(i))
-  
+
+    for powerband in powerbands_s:
+        for i in range(1,5):
+            col_names_s.append(powerband+str(i))
 
     col_names_P = col_names.copy()
     channel_pairs = ['Ch1-Ch2', 'Ch1-Ch3', 'Ch1-Ch4', 'Ch2-Ch3', 'Ch2-Ch4', 'Ch3-Ch4']

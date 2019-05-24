@@ -105,6 +105,30 @@ def epoch_label(dat):
         dat.loc[dat['epoch'] == key,'label'] = val
     return dat, epoch_label, epoch_label_epi
 
+def epoch_label_sw(dat, k_ = 31, reg = 0):
+    n = dat.shape[0]
+    k = k_// 2
+    epoch_label = {}
+    sw_vals = np.zeros(n)
+    for i in range(n):
+        start = max(i-k,0)
+        end = min(i+k,n)
+        sw_vals[i] = np.mean(dat[col_le].iloc[start:end + 1])
+    dat.loc[:,'sw_val'] = sw_vals
+    thres = np.median(sw_vals)
+    print('thres = ', thres)
+    keys = list(np.arange(n))
+    if reg > 0:
+        vals = sw_vals
+    else:
+        vals = list(np.array(sw_vals < thres))
+    # print('positive #',sum(vals))
+    # print('negative #',sum(list(np.array(sw_vals >= thres))))
+    epoch_label = dict(zip(keys, vals))
+    for key in epoch_label:
+        val = epoch_label[key]
+        dat.loc[dat['epoch'] == key,'label'] = val
+    return dat, epoch_label, None
 
 
 

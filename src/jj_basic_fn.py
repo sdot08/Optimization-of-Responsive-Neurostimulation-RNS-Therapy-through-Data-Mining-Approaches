@@ -36,7 +36,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn import ensemble
 from sklearn.metrics import mean_squared_error, make_scorer, roc_curve, auc
 from sklearn.model_selection import train_test_split
-
+from sklearn import linear_model
 
 import plot_funcs 
 from hyperparams import Hyperparams as hp
@@ -60,12 +60,14 @@ def clf_list(defs):
         
 
     elif classifier==5:
-      clf = DecisionTreeClassifier(class_weight='balanced')
+        clf = DecisionTreeClassifier(class_weight='balanced')
     elif classifier == 6:
-      clf = RandomForestClassifier(n_estimators=defs['n_estimators'], class_weight='balanced')   
+        clf = RandomForestClassifier(n_estimators=defs['n_estimators'], class_weight='balanced')   
     elif classifier == 7:
-      clf = ensemble.GradientBoostingClassifier(n_estimators=defs['n_estimators'])
+        clf = ensemble.GradientBoostingClassifier(n_estimators=defs['n_estimators'])
     
+    elif classifier == 8:
+        clf = linear_model.Lasso()
     return clf
 
 
@@ -80,6 +82,30 @@ def save_object(obj, filename):
 
 
 
+
+def scores_estimators_reg(X_test, y_test, pat, if_show=1,if_save = 0, label = None):
+    int2name = hp.int2name
+    n_estimator = hp.num_classifier
+    auc_dict = {}
+    acc_dict = {}
+    estimators_reg = [8]
+    best_acc = 0
+    # i is classifier
+    for i in pat.estimator:
+        clf_name = int2name[i]
+        clf = pat.estimator[i]
+        y_pred = clf.predict(X_test)        
+        accuracy = accuracy_score(y_test, y_pred)
+        acc_dict[name] = accuracy
+        
+        if accuracy > best_acc:
+            best_auc = accuracy
+            best_estimator = i
+    sorted_acc_dict = sorted(acc_dict.items(), key=operator.itemgetter(1), reverse=True)
+    pat.best_estimator = best_estimator
+    pat.best_acc = best_acc
+    if if_show:
+        plot_funcs.render_mpl_table(pd.DataFrame(sorted_acc_dict, columns = ['Classifier', 'Accuracy']), pat,label = label)
 
 
 

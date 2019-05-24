@@ -64,7 +64,10 @@ def scatter_performance_all(pats, if_save = 0):
     plt.show()
 
 # plot mean long episode for each epoch along with the accuracy of the prediction for each epoch
-def plot_epoch_mean_acc(pat_list, if_save = 0, label = '', random_states = None, legend_list = None,if_title = 1):
+def plot_epoch_mean_acc(pat_list, if_save = 0, label = '', random_states = None, \
+                        if_remove_sleep=1, if_remove_le = 1, le_class = None, \
+                        sleep_class =None, if_remove_delta = 1, if_scaler = 1,\
+                        if_remove_outliers = 0, if_remove_icd = 1,if_split = 0, legend_list = None,if_title = 1):
     #sample label : '_weekly'
     pat = pat_list[0]
     pat.print_features_property()
@@ -104,9 +107,10 @@ def plot_epoch_mean_acc(pat_list, if_save = 0, label = '', random_states = None,
         # print('acc = ', acc)
         if random_states != None:
             random_state = random_states[i]
-
+        else:
+            random_state = 42
         for epoch in range(num_epochs):
-            X_train, X_test, y_train, y_test = modules.get_ml_data(pat, if_split = -1, epoch = epoch, random_state = random_state)
+            X_train, X_test, y_train, y_test = modules.get_ml_data(pat, if_scaler = if_scaler, if_remove_icd = if_remove_icd, if_remove_sleep = if_remove_sleep, if_remove_le = if_remove_le, sleep_class = sleep_class, le_class = le_class, if_remove_delta = if_remove_delta, if_remove_outliers = if_remove_outliers, if_split = if_split, random_state =random_state)
             y_pred = pat.estimator[pat.best_estimator].predict(X_test)
             acc = accuracy_score(y_test, y_pred)
             acc_list.append(acc)
@@ -144,83 +148,62 @@ def plot_epoch_mean(pat_list, if_save = 0, label = '', if_title = 1, if_yrandom 
         ptid = pat.id
         dat = pat.daily
         dat_epi_agg, dat_le_agg, dat_epi_agg_ste, dat_le_agg_ste = prep.dat_agg(dat)
-        if ptid == '229w':
-            if_bar = 1
-            xlabel = 'Epoch (week)'
-        else:
-            if_bar = 0
-            xlabel = 'Epoch (month)'
-        if if_bar:
+
+        xlabel = 'Epoch (month)'
+        good_idx = []
+        bad_idx = []
+
+        if not if_yrandom:
             epoch_label_dict = pat.epoch_label_dict
-            type(epoch_label_dict)
-            colors = [] #colors for plt.bar
             for key, val in epoch_label_dict.items():
-                colors.append('red' if val else 'blue')
-            plt.figure()
-            #plt.bar(range(dat_le_agg.shape[0] - 1),np.array(dat_le_agg.iloc[:-1]), color = colors)
-            plt.bar(range(dat_le_agg.shape[0]),np.array(dat_le_agg), color = colors)
-            plt.xlabel('weeks', fontsize=hp.label_fontsize)
-            plt.ylabel('mean long episode count per day', fontsize=hp.label_fontsize)
-            if if_title:
-                plt.title('Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
-            if if_save:
-                plt.savefig('../fig/'+ ptid + '/' + 'mean_long_episode_count' + '.png')
-            plt.show()
+                # colors.append('green' if val else 'red')
+                if val:
+                    good_idx.append(key)
+                else:
+                    bad_idx.append(key)
         else:
-            good_idx = []
-            bad_idx = []
+            epoch_label_dict = pat.prev_dict
+            for key, val in epoch_label_dict.items():
+                # colors.append('green' if val else 'red')
+                if val:
+                    good_idx.append(key)
+                else:
+                    bad_idx.append(key)
+            good_r = []
+            bad_r = []
+            for key, val in pat.epoch_label_dict.items():
+                # colors.append('green' if val else 'red')
+                if val:
+                    good_r.append(key)
+                else:
+                    bad_r.append(key)   
 
-            if not if_yrandom:
-                epoch_label_dict = pat.epoch_label_dict
-                for key, val in epoch_label_dict.items():
-                    # colors.append('green' if val else 'red')
-                    if val:
-                        good_idx.append(key)
-                    else:
-                        bad_idx.append(key)
-            else:
-                epoch_label_dict = pat.prev_dict
-                for key, val in epoch_label_dict.items():
-                    # colors.append('green' if val else 'red')
-                    if val:
-                        good_idx.append(key)
-                    else:
-                        bad_idx.append(key)
-                good_r = []
-                bad_r = []
-                for key, val in pat.epoch_label_dict.items():
-                    # colors.append('green' if val else 'red')
-                    if val:
-                        good_r.append(key)
-                    else:
-                        bad_r.append(key)   
+        colors = [] #colors for plt.bar
+        fig, ax = plt.subplots(1,1)
+        ax.set_xticks(range(dat_le_agg.shape[0]))
+        ax.set_xticklabels(range(1,dat_le_agg.shape[0] + 1))
+        
+        plt.errorbar(np.array(good_idx), np.array(dat_le_agg.iloc[good_idx]),yerr=np.array(dat_le_agg_ste.iloc[good_idx]), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
+        plt.errorbar(np.array(bad_idx), np.array(dat_le_agg.iloc[bad_idx]),yerr=np.array(dat_le_agg_ste.iloc[bad_idx]), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
+        plt.plot(dat_le_agg, label = 'Long Episode Mean', color = 'black')
+        if if_yrandom:
+            plt.errorbar(np.array(good_r), np.array([1] * len(good_r)),yerr=np.array([0] * len(good_r)), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
+            plt.errorbar(np.array(bad_r), np.array([1] * len(bad_r)),yerr=np.array([0] * len(bad_r)), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
+        if if_title:
+            plt.title('Epoch Label for Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
+        
 
-            colors = [] #colors for plt.bar
-            fig, ax = plt.subplots(1,1)
-            ax.set_xticks(range(dat_le_agg.shape[0]))
-            ax.set_xticklabels(range(1,dat_le_agg.shape[0] + 1))
-            
-            plt.errorbar(np.array(good_idx), np.array(dat_le_agg.iloc[good_idx]),yerr=np.array(dat_le_agg_ste.iloc[good_idx]), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
-            plt.errorbar(np.array(bad_idx), np.array(dat_le_agg.iloc[bad_idx]),yerr=np.array(dat_le_agg_ste.iloc[bad_idx]), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
-            plt.plot(dat_le_agg, label = 'Long Episode Mean', color = 'black')
-            if if_yrandom:
-                plt.errorbar(np.array(good_r), np.array([1] * len(good_r)),yerr=np.array([0] * len(good_r)), fmt='o', mfc='blue',ecolor='black', markersize='12',label = 'Good')
-                plt.errorbar(np.array(bad_r), np.array([1] * len(bad_r)),yerr=np.array([0] * len(bad_r)), fmt='o', mfc='red',ecolor='black', markersize='12',label = 'Bad')
-            if if_title:
-                plt.title('Epoch Label for Patient {0}'.format(ptid), fontsize=hp.label_fontsize)
-            
-
-            plt.xlabel(xlabel, fontsize=hp.label_fontsize)
-            plt.ylabel('Mean Long Episode Count Per Day', fontsize=hp.label_fontsize)
-            plt.tight_layout()
-            plt.legend(fontsize=hp.label_fontsize-2)
-            if if_save:
-                directory = '../fig/mean_long_episode_count'
-                if not os.path.exists(directory):
-                    os.makedirs(directory)
-                plt.savefig(directory + '/' + pat.id + label + 'mean_long_episode_count' + '.png')
-            
-            plt.show()
+        plt.xlabel(xlabel, fontsize=hp.label_fontsize)
+        plt.ylabel('Mean Long Episode Count Per Day', fontsize=hp.label_fontsize)
+        plt.tight_layout()
+        plt.legend(fontsize=hp.label_fontsize-2)
+        if if_save:
+            directory = '../fig/mean_long_episode_count'
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            plt.savefig(directory + '/' + pat.id + label + 'mean_long_episode_count' + '.png')
+        
+        plt.show()
 
 
 def plot_confusion_matrix(cm, classes = np.array(['good', 'bad']),
