@@ -62,7 +62,10 @@ class patient():
         else:
             col_names = hp.col_names
         a = np.array(f[matlab_features_name]).T
-        features_0 = pd.DataFrame(np.array(f[matlab_features_name]).T, columns = col_names)
+        if not if_PSV:
+            a = a[:,:34]
+
+        features_0 = pd.DataFrame(a, columns = col_names)
         # all if_sti is False, for the purpose of convenience, since we are not using them
         features_1 = self.add_features_helper(features_0, False)
 

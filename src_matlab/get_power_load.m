@@ -1,7 +1,7 @@
 %% Calculate power in specific frequency bands
 %% input path of the file
 %% output the 28 power features corrsponds to the file
-function channel_power = get_power_load(data, if_le, highcut)
+function channel_power = get_power_load(data, if_le, highcut,min_length)
 
 
 %data  = readPersystDat('/Users/hp/GitHub/EEG/datdata/231/130901185189430000.dat');
@@ -72,7 +72,7 @@ end
 % NY231, min .dat length = 15513 samples
 % NY241, min .dat length = 18627 samples
 % also change the value in stitchall
-data = data(1:18627, :);
+data = data(1:min_length, :);
 fs = 250;
 
 if (size(data,1)/fs)/20 > 2 && 0 % Do not window any more because it's easier for small number of samples to induce spurious synchronization

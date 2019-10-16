@@ -27,15 +27,34 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     p222_1 = patient('222_1', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
     p222_2 = patient('222_2', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
     p222_3 = patient('222_3', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p222 = patient('222', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
     p231 = patient('231', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
     # local means whether to use local(weekly) median as threshold
-    p229 = patient('229', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    # p229 = patient('229', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
     p241 = patient('241', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
 
+    # 06/2019   239,225,251,217,229
+    # p239_1 = patient('239_1', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    # p239_2 = patient('239_2', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    # p225_1 = patient('225_1', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    # p225_2 = patient('225_2', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    # p251 = patient('251', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    # p217 = patient('217', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    # p229 = patient('229', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p239 = patient('239', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p225 = patient('225', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p201 = patient('201', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+    p226 = patient('226', if_sliding_window = if_sliding_window, sw_size = sw_size, reg = reg)
+
     #add epoch info
-    start_222_1 = datetime.strptime('Feb 12 2016', '%b %d %Y')
-    end_222_1 = datetime.strptime('Oct 24 2016', '%b %d %Y')
-    num_per_epoch_222_1 = 31
+    # start_222_1 = datetime.strptime('Feb 12 2016', '%b %d %Y')
+    # end_222_1 = datetime.strptime('Oct 24 2016', '%b %d %Y')
+    # num_per_epoch_222_1 = 31
+
+    start_222 = datetime.strptime('Feb 12 2016', '%b %d %Y')
+    end_222 = datetime.strptime('May 29 2017', '%b %d %Y')
+    num_per_epoch_222 = 31
+
 
     start_222_2 = datetime.strptime('Oct 26 2016', '%b %d %Y')
     end_222_2 = datetime.strptime('May 29 2017', '%b %d %Y')
@@ -46,31 +65,90 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     end_222_3 = datetime.strptime('Jan 30 2018', '%b %d %Y')
     num_per_epoch_222_3 = 31
 
-    start_222 = [start_222_1, start_222_2, start_222_3]
-    end_222 = [end_222_1, end_222_2, end_222_3]
-    num_per_epoch_222 = [num_per_epoch_222_1, num_per_epoch_222_2, num_per_epoch_222_3]
+    # start_222 = [start_222_1, start_222_2, start_222_3]
+    # end_222 = [end_222_1, end_222_2, end_222_3]
+    # num_per_epoch_222 = [num_per_epoch_222_1, num_per_epoch_222_2, num_per_epoch_222_3]
 
-    start_231 = datetime.strptime('Feb 7 2017', '%b %d %Y')
+
+
+    start_231 = datetime.strptime('Dec 6 2016', '%b %d %Y')
     end_231 = datetime.strptime('Feb 21 2018', '%b %d %Y')
     num_per_epoch_231 = 31
 
- 
-    start_229 = datetime.strptime('Oct 9 2017', '%b %d %Y')
-    end_229 = datetime.strptime('Aug 9 2018', '%b %d %Y')
-    num_per_epoch_229 = 31
+
+    # start_231 = datetime.strptime('Feb 7 2017', '%b %d %Y')
+    # end_231 = datetime.strptime('Feb 21 2018', '%b %d %Y')
+    # num_per_epoch_231 = 31
 
     start_241 = datetime.strptime('Nov 14 2017', '%b %d %Y')
     end_241 = datetime.strptime('Oct 4 2018', '%b %d %Y')
     num_per_epoch_241 = 29
 
+    start_239 = datetime.strptime('Jan 4 2018', '%b %d %Y')
+    end_239 = datetime.strptime('May 24 2019', '%b %d %Y')
+    num_per_epoch_239 = 31
 
+    start_225 = datetime.strptime('Jul 19 2016', '%b %d %Y')
+    end_225 = datetime.strptime('Jul 12 2017', '%b %d %Y')
+    num_per_epoch_225 = 33 
+
+#5/22/2015 - 1/29/2016, 4/11/2017 - 10/22/2017
+
+    start_201 = datetime.strptime('Feb 7 2016', '%b %d %Y')
+    end_201 = datetime.strptime('Oct 22 2017', '%b %d %Y')
+    num_per_epoch_201 = 31 
+    # Apr 26, 2017 to Nov 12, 2017
+    start_226 = datetime.strptime('Apr 26 2017', '%b %d %Y')
+    end_226 = datetime.strptime('Apr 16 2018', '%b %d %Y')
+    num_per_epoch_226 = 32 
+    # start_239_1 = datetime.strptime('Jul 13 2018', '%b %d %Y')
+    # end_239_1 = datetime.strptime('Jan 31 2019', '%b %d %Y')
+    # num_per_epoch_239_1 = 28
+
+    # start_239_2 = datetime.strptime('Jan 4 2018', '%b %d %Y')
+    # end_239_2 = datetime.strptime('Jul 11 2018', '%b %d %Y')
+    # num_per_epoch_239_2 = 31
+
+    # start_225_1 = datetime.strptime('Aug 24 2016', '%b %d %Y')
+    # end_225_1 = datetime.strptime('Apr 12 2017', '%b %d %Y')
+    # num_per_epoch_225_1 = 33
+
+    # start_225_2 = datetime.strptime('Oct 13 2017', '%b %d %Y')
+    # end_225_2 = datetime.strptime('Jun 5 2018', '%b %d %Y')
+    # num_per_epoch_225_2 = 29    
+
+    # start_251 = datetime.strptime('Sep 26 2018', '%b %d %Y')
+    # end_251 = datetime.strptime('Apr 28 2019', '%b %d %Y')
+    # num_per_epoch_251 = 30
+
+    # start_217 = datetime.strptime('Jul 19 2018', '%b %d %Y')
+    # end_217 = datetime.strptime('May 18 2019', '%b %d %Y')
+    # num_per_epoch_217 = 30
+
+    # start_229 = datetime.strptime('Oct 9 2017', '%b %d %Y')
+    # end_229 = datetime.strptime('Feb 13 2019', '%b %d %Y')
+    # num_per_epoch_229 = 27
 
     p231.add_epochinfo(start_231, end_231, num_per_epoch_231)
-    p222_1.add_epochinfo(start_222_1, end_222_1, num_per_epoch_222_1)
-    p222_2.add_epochinfo(start_222_2, end_222_2, num_per_epoch_222_2)
-    p222_3.add_epochinfo(start_222_3, end_222_3, num_per_epoch_222_3)
-    p229.add_epochinfo(start_229, end_229, num_per_epoch_229)
+    # p222_1.add_epochinfo(start_222_1, end_222_1, num_per_epoch_222_1)
+    # p222_2.add_epochinfo(start_222_2, end_222_2, num_per_epoch_222_2)
+    # p222_3.add_epochinfo(start_222_3, end_222_3, num_per_epoch_222_3)
+    p222.add_epochinfo(start_222, end_222, num_per_epoch_222)
+    # p229.add_epochinfo(start_229, end_229, num_per_epoch_229)
     p241.add_epochinfo(start_241, end_241, num_per_epoch_241)
+
+
+    # p239_1.add_epochinfo(start_239_1, end_239_1, num_per_epoch_239_1)
+    # p239_2.add_epochinfo(start_239_2, end_239_2, num_per_epoch_239_2)
+    # p225_1.add_epochinfo(start_225_1, end_225_1, num_per_epoch_225_1)
+    # p225_2.add_epochinfo(start_225_2, end_225_2, num_per_epoch_225_2)
+    # p251.add_epochinfo(start_251, end_251, num_per_epoch_251)
+    # p217.add_epochinfo(start_217, end_217, num_per_epoch_217)
+    # p229.add_epochinfo(start_229, end_229, num_per_epoch_229)
+    p239.add_epochinfo(start_239, end_239, num_per_epoch_239)
+    p225.add_epochinfo(start_225, end_225, num_per_epoch_225)
+    p201.add_epochinfo(start_201, end_201, num_per_epoch_201)    
+    p226.add_epochinfo(start_226, end_226, num_per_epoch_226)
 
     #add duration and daily
     prepath = '../data/'
@@ -86,10 +164,19 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     daily={}
     daily['222'] = prep.prep_daily(pd.read_csv(prepath + 'NY222_2015-08-11_to_2018-06-12_daily_20180613153105.csv', skiprows=3))
     daily['231'] = prep.prep_daily(pd.read_csv(prepath + 'NY231_2016-07-05_to_2018-06-12_daily_20180613153815.csv', skiprows=3))
-    daily['229'] = prep.prep_daily(pd.read_csv(prepath + 'NY229_2017-05-12_to_2018-09-07_daily_20180907183334.csv', skiprows=3))
+    # daily['229'] = prep.prep_daily(pd.read_csv(prepath + 'NY229_2017-05-12_to_2018-09-07_daily_20180907183334.csv', skiprows=3))
     daily['241'] = prep.prep_daily(pd.read_csv(prepath + 'NY241_2017-06-13_to_2018-10-05_daily_20181005204526.csv', skiprows=3))
-
     
+    daily['239'] = prep.prep_daily(pd.read_csv(prepath + 'NY239_2017-03-28_to_2019-05-24_daily_20190524174640.csv', skiprows=3))
+    daily['225'] = prep.prep_daily(pd.read_csv(prepath + 'NY225_2016-01-14_to_2019-05-23_daily_20190524174650.csv', skiprows=3))
+    daily['201'] = prep.prep_daily(pd.read_csv(prepath + '201_daily.csv', skiprows=3))
+    daily['226'] = prep.prep_daily(pd.read_csv(prepath + 'NY226_2016-02-09_to_2018-10-05_daily_20181005204146.csv', skiprows=3))
+
+
+    # daily['251'] = prep.prep_daily(pd.read_csv(prepath + 'NY251_2018-02-06_to_2019-04-29_daily_20190524174653.csv', skiprows=3))
+    # daily['217'] = prep.prep_daily(pd.read_csv(prepath + 'NY217_2015-05-14_to_2019-05-18_daily_20190524174658.csv', skiprows=3))
+    # daily['229'] = prep.prep_daily(pd.read_csv(prepath + 'NY229_2016-05-12_to_2019-05-20_daily_20190524174704.csv', skiprows=3))
+
     #all patients
     if index == -1:
         pat_list = [p231, p222_1, p222_2, p229]
@@ -102,11 +189,14 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
     elif index == 2223:
         pat_list = [p222_3]
     elif index == -2:
-        pat_list = [p241, p226]
+        pat_list = [p239,p225,p222]
     elif index == -3:
         pat_list = [p231, p222_1, p222_2, p241]
+    elif index == -4:
+        pat_list = [p231, p222, p201, p226]
+
+
     for pat in pat_list:  
-        # weekly
         if if_weekly:
             pat.epoch_info['num_per_epoch'] = 7
         if if_2weekly:
@@ -149,6 +239,7 @@ def build_patients(index = -1, freq_idx = 0, if_weekly = 0, if_2weekly = 0, if_P
         pat.ngood = pat.features.loc[pat.features['label'] == True].shape[0]
         pat.nbad = pat.features.loc[pat.features['label'] == False].shape[0]
         pat.ndata = pat.features.shape[0]
+        pat.print_features_property()
     if len(pat_list) == 1:
         return pat_list[0]
 
